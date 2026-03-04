@@ -1,0 +1,107 @@
+{
+  "projectType": "frontend",
+  "projectName": "Conty Design System",
+  "projectDescription": "A Storybook-first React design system with semantic tokens and reusable UI components for building consistent user interfaces.",
+  "theme": "willow",
+  "primaryColor": "#6366f1",
+  "lightColor": null,
+  "darkColor": null,
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Design Tokens",
+            "pages": [
+              "tokens/overview",
+              "tokens/colors",
+              "tokens/spacing",
+              "tokens/typography",
+              "tokens/theming"
+            ]
+          },
+          {
+            "group": "Integration",
+            "pages": [
+              "integration/setup",
+              "integration/conty-web",
+              "integration/migration"
+            ]
+          },
+          {
+            "group": "Contributing",
+            "pages": [
+              "contributing/guidelines",
+              "contributing/component-dod",
+              "contributing/storybook"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Components",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "components/overview"
+            ]
+          },
+          {
+            "group": "Actions",
+            "pages": [
+              "components/button"
+            ]
+          },
+          {
+            "group": "Feedback",
+            "pages": [
+              "components/badge"
+            ]
+          },
+          {
+            "group": "Layout",
+            "pages": [
+              "components/card"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Semantic design tokens with cross-platform support",
+    "Storybook-first component development",
+    "React components built with Radix UI",
+    "Class variance authority for type-safe variants",
+    "Incremental migration strategy",
+    "Light and dark theme support"
+  ],
+  "publicApiSurface": [
+    "Button",
+    "Badge",
+    "Card",
+    "CardHeader",
+    "CardTitle",
+    "CardDescription",
+    "CardContent",
+    "CardFooter",
+    "CardAction",
+    "semanticTokens",
+    "colors",
+    "spacing",
+    "radii",
+    "typography",
+    "buttonVariants",
+    "badgeVariants"
+  ]
+}
