@@ -1,0 +1,472 @@
+---
+title: Card
+description: A flexible container component for grouping related content with header, content, and footer sections
+---
+
+# Card
+
+The Card component provides a versatile container for organizing related information. Built with a compositional API, it includes subcomponents for headers, titles, descriptions, content, actions, and footers.
+
+## Installation
+
+The Card component is available as part of the `@conty/ui` package:
+
+```bash
+npm install @conty/ui
+```
+
+## Usage
+
+### Basic Card
+
+```tsx
+import { Card, CardHeader, CardTitle, CardContent } from "@conty/ui"
+
+export default function Example() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Card Title</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p>Card content goes here.</p>
+      </CardContent>
+    </Card>
+  )
+}
+```
+
+### Complete Card Structure
+
+```tsx
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  CardAction,
+  Button
+} from "@conty/ui"
+
+export default function Example() {
+  return (
+    <Card className="w-[360px]">
+      <CardHeader>
+        <CardTitle>Pro Plan</CardTitle>
+        <CardDescription>
+          Ideal for teams that need collaboration.
+        </CardDescription>
+        <CardAction>
+          <Button variant="ghost" size="icon">
+            <IconDotsVertical />
+          </Button>
+        </CardAction>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground">
+          Includes components, tokens, and priority support.
+        </p>
+      </CardContent>
+      <CardFooter>
+        <Button size="sm">Select plan</Button>
+      </CardFooter>
+    </Card>
+  )
+}
+```
+
+### Card with Header Action
+
+The `CardAction` component is positioned in the top-right corner of the card header:
+
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle>Settings</CardTitle>
+    <CardDescription>Manage your account settings</CardDescription>
+    <CardAction>
+      <Button variant="ghost" size="icon-sm">
+        <IconX />
+      </Button>
+    </CardAction>
+  </CardHeader>
+  <CardContent>
+    {/* Settings form */}
+  </CardContent>
+</Card>
+```
+
+### Card with Muted Background
+
+```tsx
+<Card className="bg-muted">
+  <CardHeader>
+    <CardTitle>Muted Surface</CardTitle>
+    <CardDescription>Example for supporting areas</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p className="text-sm text-muted-foreground">
+      Used to highlight secondary information.
+    </p>
+  </CardContent>
+</Card>
+```
+
+### Card with Dividers
+
+Add border classes to create visual separation:
+
+```tsx
+<Card>
+  <CardHeader className="border-b">
+    <CardTitle>Header with divider</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <p>Content area</p>
+  </CardContent>
+  <CardFooter className="border-t">
+    <Button>Action</Button>
+  </CardFooter>
+</Card>
+```
+
+## API Reference
+
+### Card
+
+The root container component.
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the card container.
+</ParamField>
+
+All standard HTML div attributes are supported.
+
+### CardHeader
+
+Container for the card's header section, including title, description, and optional action.
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the header.
+</ParamField>
+
+<Note>
+  CardHeader uses a grid layout that automatically positions CardAction in the top-right corner when present.
+</Note>
+
+### CardTitle
+
+Displays the main heading of the card.
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the title.
+</ParamField>
+
+### CardDescription
+
+Displays supporting text below the title.
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the description.
+</ParamField>
+
+### CardAction
+
+Container for header actions, positioned in the top-right corner of the card header.
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the action container.
+</ParamField>
+
+<Note>
+  CardAction must be placed inside CardHeader to position correctly. It uses CSS Grid positioning to align to the top-right.
+</Note>
+
+### CardContent
+
+The main content area of the card.
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the content area.
+</ParamField>
+
+### CardFooter
+
+Container for footer content, typically actions or metadata.
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the footer.
+</ParamField>
+
+### TypeScript Definitions
+
+```tsx
+function Card(props: React.ComponentProps<"div">): JSX.Element
+function CardHeader(props: React.ComponentProps<"div">): JSX.Element
+function CardTitle(props: React.ComponentProps<"div">): JSX.Element
+function CardDescription(props: React.ComponentProps<"div">): JSX.Element
+function CardAction(props: React.ComponentProps<"div">): JSX.Element
+function CardContent(props: React.ComponentProps<"div">): JSX.Element
+function CardFooter(props: React.ComponentProps<"div">): JSX.Element
+```
+
+## Styling Details
+
+### Card Container
+
+From ~/workspace/source/packages/ui/src/components/card.tsx:5-15, the Card component includes:
+
+- Background: `bg-card` with `text-card-foreground`
+- Flexbox column layout with 6-unit gap
+- Rounded corners: `rounded-xl`
+- Border for definition
+- Padding: `py-6` (vertical only, horizontal padding on children)
+- Subtle shadow with hover effect
+- Smooth shadow transitions
+- Dark mode optimized shadows
+
+### CardHeader Layout
+
+From ~/workspace/source/packages/ui/src/components/card.tsx:18-28:
+
+- Grid layout with auto-sizing rows
+- Container query support (`@container/card-header`)
+- 2-column layout when CardAction is present
+- Horizontal padding: `px-6`
+- Responsive gap: `gap-2`
+- Automatic bottom padding when border-b class is applied
+
+### CardTitle Styling
+
+From ~/workspace/source/packages/ui/src/components/card.tsx:31-38:
+
+- Semibold font weight
+- Tight line height for readability
+
+### CardDescription Styling
+
+From ~/workspace/source/packages/ui/src/components/card.tsx:41-51:
+
+- Muted foreground color
+- Small text size (`text-sm`)
+- Positioned below title in grid
+
+### CardAction Positioning
+
+From ~/workspace/source/packages/ui/src/components/card.tsx:54-64:
+
+- Grid column 2, spanning rows 1-2
+- Self-aligned to start (top)
+- Justified to end (right)
+- Creates header with action button pattern
+
+### CardContent Padding
+
+From ~/workspace/source/packages/ui/src/components/card.tsx:67-74:
+
+- Horizontal padding: `px-6`
+- Matches header padding for alignment
+
+### CardFooter Layout
+
+From ~/workspace/source/packages/ui/src/components/card.tsx:77-84:
+
+- Flex layout for action alignment
+- Horizontal padding: `px-6`
+- Automatic top padding when border-t class is applied
+
+## Composition Patterns
+
+### Minimal Card
+
+```tsx
+<Card>
+  <CardContent>
+    <p>Simple content without header or footer</p>
+  </CardContent>
+</Card>
+```
+
+### Pricing Card
+
+```tsx
+<Card className="w-[320px]">
+  <CardHeader>
+    <CardTitle>Pro Plan</CardTitle>
+    <CardDescription>For growing teams</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <div className="text-4xl font-bold">$29</div>
+    <p className="text-sm text-muted-foreground">per user/month</p>
+    <ul className="mt-4 space-y-2 text-sm">
+      <li>✓ Unlimited projects</li>
+      <li>✓ Priority support</li>
+      <li>✓ Advanced analytics</li>
+    </ul>
+  </CardContent>
+  <CardFooter>
+    <Button className="w-full">Get Started</Button>
+  </CardFooter>
+</Card>
+```
+
+### Stats Card
+
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle>Total Revenue</CardTitle>
+    <CardDescription>Last 30 days</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <div className="text-3xl font-bold">$45,231</div>
+    <p className="text-sm text-green-600">+20.1% from last month</p>
+  </CardContent>
+</Card>
+```
+
+### Form Card
+
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle>Login</CardTitle>
+    <CardDescription>Enter your credentials to continue</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <form className="space-y-4">
+      <Input type="email" placeholder="Email" />
+      <Input type="password" placeholder="Password" />
+    </form>
+  </CardContent>
+  <CardFooter className="flex justify-between">
+    <Button variant="ghost">Forgot password?</Button>
+    <Button>Sign in</Button>
+  </CardFooter>
+</Card>
+```
+
+### Interactive Card with Action Menu
+
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle>Project Alpha</CardTitle>
+    <CardDescription>Design system implementation</CardDescription>
+    <CardAction>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon-sm">
+            <IconDotsVertical />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem>Edit</DropdownMenuItem>
+          <DropdownMenuItem>Duplicate</DropdownMenuItem>
+          <DropdownMenuItem>Archive</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </CardAction>
+  </CardHeader>
+  <CardContent>
+    <p className="text-sm">Status: In Progress</p>
+  </CardContent>
+</Card>
+```
+
+## Accessibility
+
+### Semantic Structure
+
+- Card components use semantic `<div>` elements
+- Consider wrapping cards in `<article>` or `<section>` for better semantics:
+
+```tsx
+<article>
+  <Card>
+    <CardHeader>
+      <CardTitle>Article Title</CardTitle>
+    </CardHeader>
+    <CardContent>
+      {/* content */}
+    </CardContent>
+  </Card>
+</article>
+```
+
+### Heading Hierarchy
+
+CardTitle doesn't enforce heading level. Use appropriate heading elements:
+
+```tsx
+<CardHeader>
+  <CardTitle asChild>
+    <h2>Proper Heading</h2>
+  </CardTitle>
+</CardHeader>
+```
+
+### Interactive Cards
+
+If the entire card is clickable, use proper interactive elements:
+
+```tsx
+<a href="/details" className="block no-underline">
+  <Card className="hover:border-primary transition-colors">
+    {/* card content */}
+  </Card>
+</a>
+```
+
+### Focus Management
+
+Ensure interactive elements within cards (buttons, links) are keyboard accessible and have visible focus states.
+
+## Best Practices
+
+1. **Consistent spacing**: Use the default padding classes unless you have a specific layout need
+2. **Header actions**: Place contextual actions in CardAction for consistent positioning
+3. **Dividers**: Use `border-b` on CardHeader and `border-t` on CardFooter for visual separation
+4. **Width constraints**: Cards work best with explicit width constraints (e.g., `w-[360px]`)
+5. **Composition over props**: Build complex cards by composing subcomponents rather than passing complex prop configurations
+6. **Semantic HTML**: Wrap CardTitle content in appropriate heading elements for accessibility
+7. **Responsive layouts**: Use grid or flex layouts to arrange multiple cards
+
+## Examples
+
+### Card Grid
+
+```tsx
+<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+  <Card>...</Card>
+  <Card>...</Card>
+  <Card>...</Card>
+</div>
+```
+
+### Hoverable Card
+
+```tsx
+<Card className="transition-all hover:shadow-lg hover:border-primary cursor-pointer">
+  {/* card content */}
+</Card>
+```
+
+### Card with Badge
+
+```tsx
+<Card>
+  <CardHeader>
+    <div className="flex items-center justify-between">
+      <CardTitle>Feature Request</CardTitle>
+      <Badge variant="secondary">New</Badge>
+    </div>
+    <CardDescription>Suggested by user feedback</CardDescription>
+  </CardHeader>
+  <CardContent>
+    {/* content */}
+  </CardContent>
+</Card>
+```

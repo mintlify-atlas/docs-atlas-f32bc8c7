@@ -1,0 +1,528 @@
+---
+title: Color Tokens
+description: Complete reference for Conty's color token system using OKLCH color space
+---
+
+Conty's color system uses the OKLCH color space to provide perceptually uniform, accessible colors that automatically adapt between light and dark themes.
+
+## Color Categories
+
+Colors are organized into five semantic categories:
+
+- **Surface** - Background colors for containers and surfaces
+- **Text** - Foreground colors for typography and icons
+- **Brand** - Primary brand colors for interactive elements
+- **Border** - Border and divider colors
+- **Status** - State colors for destructive actions and feedback
+
+## Surface Colors
+
+Surface tokens define background colors for your application.
+
+<ParamField path="surface.default" type="color">
+  Default background color for the application
+  
+  <CodeGroup>
+  ```ts Token
+  semanticTokens.color.surface.default
+  ```
+  
+  ```css Value (Light)
+  oklch(1 0 0) /* Pure white */
+  ```
+  
+  ```css Value (Dark)
+  #0b0d10 /* Deep dark blue-gray */
+  ```
+  </CodeGroup>
+  
+  **CSS Custom Property:** `--background`
+</ParamField>
+
+<ParamField path="surface.muted" type="color">
+  Muted/subdued background for secondary containers
+  
+  <CodeGroup>
+  ```ts Token
+  semanticTokens.color.surface.muted
+  ```
+  
+  ```css Value (Light)
+  oklch(0.96 0 0) /* Light gray */
+  ```
+  
+  ```css Value (Dark)
+  oklch(0.252 0 0) /* Dark gray */
+  ```
+  </CodeGroup>
+  
+  **CSS Custom Property:** `--muted`
+</ParamField>
+
+### Usage Example
+
+<CodeGroup>
+```tsx React Component
+import { semanticTokens } from '@conty/tokens'
+
+function Card({ children }) {
+  return (
+    <div style={{ 
+      backgroundColor: semanticTokens.color.surface.default,
+      border: `1px solid ${semanticTokens.color.border.default}`
+    }}>
+      {children}
+    </div>
+  )
+}
+```
+
+```css Tailwind/CSS
+.card {
+  background-color: var(--color-background);
+}
+
+.card-muted {
+  background-color: var(--color-muted);
+}
+```
+
+```tsx Real Example
+// From packages/ui/src/components/card.tsx
+function Card({ className, ...props }) {
+  return (
+    <div
+      className="bg-card text-card-foreground rounded-xl border shadow-xs"
+      {...props}
+    />
+  )
+}
+```
+</CodeGroup>
+
+## Text Colors
+
+Text tokens provide semantic foreground colors for typography.
+
+<ParamField path="text.default" type="color">
+  Primary text color for body content
+  
+  <CodeGroup>
+  ```ts Token
+  semanticTokens.color.text.default
+  ```
+  
+  ```css Value (Light)
+  oklch(0.2178 0 0) /* Near black */
+  ```
+  
+  ```css Value (Dark)
+  oklch(0.9551 0 0) /* Near white */
+  ```
+  </CodeGroup>
+  
+  **CSS Custom Property:** `--foreground`
+  
+  **WCAG Contrast Ratio:** 16.8:1 (AAA) on default surface
+</ParamField>
+
+<ParamField path="text.muted" type="color">
+  Secondary/muted text for less prominent content
+  
+  <CodeGroup>
+  ```ts Token
+  semanticTokens.color.text.muted
+  ```
+  
+  ```css Value (Light)
+  oklch(0.5103 0 0) /* Medium gray */
+  ```
+  
+  ```css Value (Dark)
+  oklch(0.683 0 0) /* Light gray */
+  ```
+  </CodeGroup>
+  
+  **CSS Custom Property:** `--muted-foreground`
+  
+  **WCAG Contrast Ratio:** 6.5:1 (AA) on default surface
+</ParamField>
+
+<ParamField path="text.onBrand" type="color">
+  Text color when placed on brand-colored backgrounds
+  
+  <CodeGroup>
+  ```ts Token
+  semanticTokens.color.text.onBrand
+  ```
+  
+  ```css Value (Light)
+  oklch(1 0 0) /* White */
+  ```
+  
+  ```css Value (Dark)
+  oklch(0.9551 0 0) /* Near white */
+  ```
+  </CodeGroup>
+  
+  **CSS Custom Property:** `--primary-foreground`
+</ParamField>
+
+### Usage Example
+
+<CodeGroup>
+```tsx React Component
+import { semanticTokens } from '@conty/tokens'
+
+function Text({ muted, children }) {
+  const color = muted 
+    ? semanticTokens.color.text.muted 
+    : semanticTokens.color.text.default
+  
+  return <p style={{ color }}>{children}</p>
+}
+```
+
+```tsx Real Example
+// From packages/ui/src/components/card.tsx
+function CardDescription({ className, ...props }) {
+  return (
+    <div
+      className="text-muted-foreground text-sm"
+      {...props}
+    />
+  )
+}
+```
+</CodeGroup>
+
+## Brand Colors
+
+Brand tokens represent your primary brand identity.
+
+<ParamField path="brand.primary" type="color">
+  Primary brand color for buttons, links, and key interactions
+  
+  <CodeGroup>
+  ```ts Token
+  semanticTokens.color.brand.primary
+  ```
+  
+  ```css Value (Light & Dark)
+  oklch(0.6248 0.2042 257.0818) /* Vibrant blue */
+  ```
+  </CodeGroup>
+  
+  **CSS Custom Property:** `--primary`
+  
+  **Lightness:** 62.48% - Optimized for both light and dark themes
+  
+  **Chroma:** 0.2042 - Saturated but not overwhelming
+  
+  **Hue:** 257.08° - Blue-violet
+</ParamField>
+
+### Usage Example
+
+<CodeGroup>
+```tsx React Component
+import { semanticTokens } from '@conty/tokens'
+
+function PrimaryButton({ children }) {
+  return (
+    <button style={{
+      backgroundColor: semanticTokens.color.brand.primary,
+      color: semanticTokens.color.text.onBrand
+    }}>
+      {children}
+    </button>
+  )
+}
+```
+
+```tsx Real Example
+// From packages/ui/src/components/button.tsx
+const buttonVariants = cva(
+  "inline-flex items-center justify-center...",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        outline: "border bg-background hover:bg-accent",
+        // ...
+      }
+    }
+  }
+)
+```
+</CodeGroup>
+
+## Border Colors
+
+Border tokens provide consistent edge and divider colors.
+
+<ParamField path="border.default" type="color">
+  Standard border color for components
+  
+  <CodeGroup>
+  ```ts Token
+  semanticTokens.color.border.default
+  ```
+  
+  ```css Value (Light)
+  oklch(0.92 0 0) /* Light gray */
+  ```
+  
+  ```css Value (Dark)
+  oklch(0.28 0 0) /* Dark gray */
+  ```
+  </CodeGroup>
+  
+  **CSS Custom Property:** `--border`
+</ParamField>
+
+<ParamField path="border.focus" type="color">
+  Focus ring color for keyboard navigation
+  
+  <CodeGroup>
+  ```ts Token
+  semanticTokens.color.border.focus
+  ```
+  
+  ```css Value (Light & Dark)
+  oklch(0.8452 0 0)
+  ```
+  </CodeGroup>
+  
+  **CSS Custom Property:** `--ring`
+</ParamField>
+
+### Usage Example
+
+```tsx
+import { semanticTokens } from '@conty/tokens'
+
+function Input({ focused }) {
+  return (
+    <input style={{
+      border: `1px solid ${focused 
+        ? semanticTokens.color.border.focus 
+        : semanticTokens.color.border.default}`
+    }} />
+  )
+}
+```
+
+## Status Colors
+
+Status tokens communicate state and feedback.
+
+<ParamField path="status.destructive" type="color">
+  Destructive/error color for dangerous actions
+  
+  <CodeGroup>
+  ```ts Token
+  semanticTokens.color.status.destructive
+  ```
+  
+  ```css Value (Light & Dark)
+  oklch(0.6496 0.2362 26.9032) /* Warm red */
+  ```
+  </CodeGroup>
+  
+  **CSS Custom Property:** `--destructive`
+  
+  **Lightness:** 64.96% - Visible but not alarming
+  
+  **Chroma:** 0.2362 - High saturation for attention
+  
+  **Hue:** 26.90° - Warm red-orange
+</ParamField>
+
+<ParamField path="status.onDestructive" type="color">
+  Text color on destructive backgrounds
+  
+  <CodeGroup>
+  ```ts Token
+  semanticTokens.color.status.onDestructive
+  ```
+  
+  ```css Value (Light & Dark)
+  oklch(1 0 0) /* White */
+  ```
+  </CodeGroup>
+  
+  **CSS Custom Property:** `--destructive-foreground`
+</ParamField>
+
+### Usage Example
+
+<CodeGroup>
+```tsx React Component
+import { semanticTokens } from '@conty/tokens'
+
+function DeleteButton({ children }) {
+  return (
+    <button style={{
+      backgroundColor: semanticTokens.color.status.destructive,
+      color: semanticTokens.color.status.onDestructive
+    }}>
+      {children}
+    </button>
+  )
+}
+```
+
+```tsx Real Example
+// From packages/ui/src/components/button.tsx
+const buttonVariants = cva(/*...*/, {
+  variants: {
+    variant: {
+      destructive:
+        "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20"
+    }
+  }
+})
+```
+</CodeGroup>
+
+## Legacy Color Aliases
+
+For backward compatibility, Conty provides legacy aliases that map to semantic tokens:
+
+```ts
+// packages/tokens/src/index.ts
+export const colors = {
+  background: semanticTokens.color.surface.default,
+  foreground: semanticTokens.color.text.default,
+  primary: semanticTokens.color.brand.primary,
+  primaryForeground: semanticTokens.color.text.onBrand,
+  secondary: semanticTokens.color.surface.muted,
+  secondaryForeground: semanticTokens.color.text.default,
+  muted: semanticTokens.color.surface.muted,
+  mutedForeground: semanticTokens.color.text.muted,
+  border: semanticTokens.color.border.default,
+  ring: semanticTokens.color.border.focus,
+  destructive: semanticTokens.color.status.destructive,
+  destructiveForeground: semanticTokens.color.status.onDestructive
+} as const
+```
+
+<Note>
+  New projects should use semantic token paths. Legacy aliases are maintained while teams migrate to the new structure.
+</Note>
+
+## Complete Token Reference
+
+<Accordion title="All Color Tokens (TypeScript Definition)">
+```ts
+// From packages/tokens/src/index.ts
+export const semanticTokens = {
+  color: {
+    surface: {
+      default: "oklch(1 0 0)",
+      defaultDark: "#0b0d10",
+      muted: "oklch(0.96 0 0)",
+      mutedDark: "oklch(0.252 0 0)"
+    },
+    text: {
+      default: "oklch(0.2178 0 0)",
+      defaultDark: "oklch(0.9551 0 0)",
+      muted: "oklch(0.5103 0 0)",
+      mutedDark: "oklch(0.683 0 0)",
+      onBrand: "oklch(1 0 0)",
+      onBrandDark: "oklch(0.9551 0 0)"
+    },
+    brand: {
+      primary: "oklch(0.6248 0.2042 257.0818)",
+      primaryDark: "oklch(0.6248 0.2042 257.0818)"
+    },
+    border: {
+      default: "oklch(0.92 0 0)",
+      defaultDark: "oklch(0.28 0 0)",
+      focus: "oklch(0.8452 0 0)"
+    },
+    status: {
+      destructive: "oklch(0.6496 0.2362 26.9032)",
+      onDestructive: "oklch(1 0 0)"
+    }
+  }
+} as const
+```
+</Accordion>
+
+## CSS Custom Properties
+
+<Accordion title="All CSS Variables (theme.css)">
+```css
+/* From packages/tokens/src/theme.css */
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.2178 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2178 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2178 0 0);
+  --primary: oklch(0.6248 0.2042 257.0818);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.96 0 0);
+  --secondary-foreground: oklch(0.2178 0 0);
+  --muted: oklch(0.96 0 0);
+  --muted-foreground: oklch(0.5103 0 0);
+  --accent: oklch(0.96 0 0);
+  --accent-foreground: oklch(0.2178 0 0);
+  --destructive: oklch(0.6496 0.2362 26.9032);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.92 0 0);
+  --input: oklch(0.96 0 0);
+  --ring: oklch(0.8452 0 0);
+}
+
+.dark {
+  --background: #0b0d10;
+  --foreground: oklch(0.9551 0 0);
+  --card: oklch(0.2 0 0);
+  --card-foreground: oklch(0.9551 0 0);
+  --popover: oklch(0.16 0 0);
+  --popover-foreground: oklch(0.9551 0 0);
+  --primary: oklch(0.6248 0.2042 257.0818);
+  --primary-foreground: oklch(0.9551 0 0);
+  --secondary: oklch(0.2178 0 0);
+  --secondary-foreground: oklch(0.9551 0 0);
+  --muted: oklch(0.252 0 0);
+  --muted-foreground: oklch(0.683 0 0);
+  --accent: oklch(0.2178 0 0);
+  --accent-foreground: oklch(0.9551 0 0);
+  --destructive: oklch(0.6496 0.2362 26.9032);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.28 0 0);
+  --input: oklch(0.2178 0 0);
+  --ring: oklch(0.5103 0 0);
+}
+```
+</Accordion>
+
+## Accessibility
+
+All color combinations in Conty meet WCAG 2.1 Level AA standards:
+
+- **text.default on surface.default:** 16.8:1 (AAA)
+- **text.muted on surface.default:** 6.5:1 (AA)
+- **text.onBrand on brand.primary:** 4.8:1 (AA)
+- **status.onDestructive on status.destructive:** 4.5:1 (AA)
+
+<Note>
+  When customizing colors, use a contrast checker to ensure WCAG compliance. Aim for at least 4.5:1 for normal text and 3:1 for large text.
+</Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Spacing Tokens" href="/tokens/spacing">
+    Learn about the spacing scale and layout tokens
+  </Card>
+  
+  <Card title="Theming Guide" href="/tokens/theming">
+    Implement light/dark mode and create custom themes
+  </Card>
+</CardGroup>

@@ -1,0 +1,589 @@
+---
+title: Theming
+description: Implement light/dark mode, work with CSS custom properties, and create custom themes
+---
+
+Conty's theming system is built on CSS custom properties and seamlessly integrates with next-themes for React applications. It supports light and dark modes out of the box.
+
+## Theme Architecture
+
+Conty uses a two-layer theming approach:
+
+1. **Semantic Tokens** - JavaScript/TypeScript values exported from `@conty/tokens`
+2. **CSS Custom Properties** - Runtime theme variables that change based on the active theme
+
+<Steps>
+  <Step title="Define semantic tokens">
+    Core color values are defined in TypeScript:
+    
+    ```ts
+    // packages/tokens/src/index.ts
+    export const semanticTokens = {
+      color: {
+        surface: {
+          default: "oklch(1 0 0)",
+          defaultDark: "#0b0d10"
+        }
+      }
+    }
+    ```
+  </Step>
+  
+  <Step title="Map to CSS variables">
+    Tokens are mapped to CSS custom properties in theme.css:
+    
+    ```css
+    :root {
+      --background: oklch(1 0 0);
+    }
+    
+    .dark {
+      --background: #0b0d10;
+    }
+    ```
+  </Step>
+  
+  <Step title="Reference in components">
+    Components use CSS variables that automatically update:
+    
+    ```tsx
+    <div className="bg-background text-foreground">
+      Themed content
+    </div>
+    ```
+  </Step>
+</Steps>
+
+## Light and Dark Themes
+
+Conty provides complete light and dark color schemes:
+
+### Light Theme (Default)
+
+```css
+/* From packages/tokens/src/theme.css */
+:root {
+  --background: oklch(1 0 0);                    /* Pure white */
+  --foreground: oklch(0.2178 0 0);              /* Near black */
+  --primary: oklch(0.6248 0.2042 257.0818);     /* Brand blue */
+  --primary-foreground: oklch(1 0 0);           /* White on brand */
+  --muted: oklch(0.96 0 0);                     /* Light gray surface */
+  --muted-foreground: oklch(0.5103 0 0);        /* Medium gray text */
+  --border: oklch(0.92 0 0);                    /* Light border */
+  --destructive: oklch(0.6496 0.2362 26.9032);  /* Error red */
+  /* ... more tokens */
+}
+```
+
+### Dark Theme
+
+```css
+.dark {
+  --background: #0b0d10;                        /* Deep dark blue */
+  --foreground: oklch(0.9551 0 0);              /* Near white */
+  --primary: oklch(0.6248 0.2042 257.0818);     /* Same brand blue */
+  --primary-foreground: oklch(0.9551 0 0);      /* Near white on brand */
+  --muted: oklch(0.252 0 0);                    /* Dark gray surface */
+  --muted-foreground: oklch(0.683 0 0);         /* Light gray text */
+  --border: oklch(0.28 0 0);                    /* Dark border */
+  --destructive: oklch(0.6496 0.2362 26.9032);  /* Same error red */
+  /* ... more tokens */
+}
+```
+
+<Note>
+  Notice that the brand primary color stays the same in both themes. Its OKLCH lightness (62.48%) is carefully calibrated to work on both light and dark backgrounds.
+</Note>
+
+## Complete CSS Theme Definition
+
+<Accordion title="View Full theme.css">
+```css
+/* From packages/tokens/src/theme.css */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.2178 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2178 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2178 0 0);
+  --primary: oklch(0.6248 0.2042 257.0818);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.96 0 0);
+  --secondary-foreground: oklch(0.2178 0 0);
+  --muted: oklch(0.96 0 0);
+  --muted-foreground: oklch(0.5103 0 0);
+  --accent: oklch(0.96 0 0);
+  --accent-foreground: oklch(0.2178 0 0);
+  --destructive: oklch(0.6496 0.2362 26.9032);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.92 0 0);
+  --input: oklch(0.96 0 0);
+  --ring: oklch(0.8452 0 0);
+  --radius-sm: 0.525rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.725rem;
+}
+
+.dark {
+  --background: #0b0d10;
+  --foreground: oklch(0.9551 0 0);
+  --card: oklch(0.2 0 0);
+  --card-foreground: oklch(0.9551 0 0);
+  --popover: oklch(0.16 0 0);
+  --popover-foreground: oklch(0.9551 0 0);
+  --primary: oklch(0.6248 0.2042 257.0818);
+  --primary-foreground: oklch(0.9551 0 0);
+  --secondary: oklch(0.2178 0 0);
+  --secondary-foreground: oklch(0.9551 0 0);
+  --muted: oklch(0.252 0 0);
+  --muted-foreground: oklch(0.683 0 0);
+  --accent: oklch(0.2178 0 0);
+  --accent-foreground: oklch(0.9551 0 0);
+  --destructive: oklch(0.6496 0.2362 26.9032);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.28 0 0);
+  --input: oklch(0.2178 0 0);
+  --ring: oklch(0.5103 0 0);
+}
+```
+</Accordion>
+
+## Setting Up Theme Switching
+
+Conty integrates seamlessly with `next-themes` for React applications:
+
+<Tabs>
+  <Tab title="Next.js App Router">
+    ```tsx
+    // app/providers.tsx
+    'use client'
+    
+    import { ThemeProvider } from 'next-themes'
+    
+    export function Providers({ children }: { children: React.ReactNode }) {
+      return (
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      )
+    }
+    ```
+    
+    ```tsx
+    // app/layout.tsx
+    import { Providers } from './providers'
+    import '@conty/tokens/theme.css'
+    
+    export default function RootLayout({ children }) {
+      return (
+        <html lang="en" suppressHydrationWarning>
+          <body>
+            <Providers>{children}</Providers>
+          </body>
+        </html>
+      )
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Next.js Pages Router">
+    ```tsx
+    // pages/_app.tsx
+    import { ThemeProvider } from 'next-themes'
+    import '@conty/tokens/theme.css'
+    import type { AppProps } from 'next/app'
+    
+    export default function App({ Component, pageProps }: AppProps) {
+      return (
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+        >
+          <Component {...pageProps} />
+        </ThemeProvider>
+      )
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Vite/React">
+    ```tsx
+    // main.tsx
+    import React from 'react'
+    import ReactDOM from 'react-dom/client'
+    import { ThemeProvider } from 'next-themes'
+    import '@conty/tokens/theme.css'
+    import App from './App'
+    
+    ReactDOM.createRoot(document.getElementById('root')!).render(
+      <React.StrictMode>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+        >
+          <App />
+        </ThemeProvider>
+      </React.StrictMode>
+    )
+    ```
+  </Tab>
+</Tabs>
+
+## Creating a Theme Toggle
+
+Build a theme switcher component:
+
+```tsx
+'use client'
+
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
+import { Button } from '@conty/ui'
+
+export function ThemeToggle() {
+  const [mounted, setMounted] = useState(false)
+  const { theme, setTheme } = useTheme()
+  
+  // Avoid hydration mismatch
+  useEffect(() => setMounted(true), [])
+  if (!mounted) return null
+  
+  return (
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+    >
+      {theme === 'dark' ? '🌞' : '🌙'}
+    </Button>
+  )
+}
+```
+
+## Custom Themes
+
+Create custom color schemes by extending the base theme:
+
+### Custom Brand Color
+
+```css
+/* custom-theme.css */
+:root {
+  /* Override brand primary */
+  --primary: oklch(0.65 0.25 145);  /* Custom green */
+}
+
+.dark {
+  --primary: oklch(0.65 0.25 145);  /* Same in dark mode */
+}
+```
+
+### Multiple Theme Variants
+
+```css
+/* Ocean theme */
+[data-theme="ocean"] {
+  --primary: oklch(0.6 0.15 230);           /* Deep blue */
+  --background: oklch(0.98 0.01 230);       /* Blue-tinted white */
+  --muted: oklch(0.94 0.02 230);           /* Blue-gray */
+}
+
+/* Forest theme */
+[data-theme="forest"] {
+  --primary: oklch(0.55 0.18 150);          /* Forest green */
+  --background: oklch(0.98 0.01 150);       /* Green-tinted white */
+  --muted: oklch(0.94 0.02 150);           /* Green-gray */
+}
+```
+
+Then update your ThemeProvider:
+
+```tsx
+<ThemeProvider
+  attribute="data-theme"
+  defaultTheme="light"
+  themes={['light', 'dark', 'ocean', 'forest']}
+>
+  {children}
+</ThemeProvider>
+```
+
+## Programmatic Theme Access
+
+Access theme values in JavaScript:
+
+<CodeGroup>
+```tsx Using CSS Variables
+function MyComponent() {
+  // Read CSS variable value
+  const primaryColor = getComputedStyle(document.documentElement)
+    .getPropertyValue('--primary')
+    .trim()
+  
+  return (
+    <div style={{ backgroundColor: primaryColor }}>
+      Themed background
+    </div>
+  )
+}
+```
+
+```tsx Using Semantic Tokens
+import { semanticTokens } from '@conty/tokens'
+import { useTheme } from 'next-themes'
+
+function MyComponent() {
+  const { theme } = useTheme()
+  
+  const bgColor = theme === 'dark' 
+    ? semanticTokens.color.surface.defaultDark
+    : semanticTokens.color.surface.default
+  
+  return (
+    <div style={{ backgroundColor: bgColor }}>
+      Themed background
+    </div>
+  )
+}
+```
+</CodeGroup>
+
+<Note>
+  Prefer using Tailwind classes or CSS variables over programmatic access. This allows the browser to handle theme switching more efficiently.
+</Note>
+
+## Respecting System Preferences
+
+Conty automatically respects the user's system theme preference:
+
+```tsx
+<ThemeProvider
+  attribute="class"
+  defaultTheme="system"  // Matches OS preference
+  enableSystem           // Listen for OS changes
+>
+  {children}
+</ThemeProvider>
+```
+
+You can also detect the system preference manually:
+
+```tsx
+function useSystemTheme() {
+  const [isDark, setIsDark] = useState(
+    () => window.matchMedia('(prefers-color-scheme: dark)').matches
+  )
+  
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handler = (e: MediaQueryListEvent) => setIsDark(e.matches)
+    
+    mediaQuery.addEventListener('change', handler)
+    return () => mediaQuery.removeEventListener('change', handler)
+  }, [])
+  
+  return isDark ? 'dark' : 'light'
+}
+```
+
+## Theme-Aware Components
+
+Create components that adapt to the active theme:
+
+```tsx
+import { useTheme } from 'next-themes'
+
+function Logo() {
+  const { theme } = useTheme()
+  
+  return (
+    <img 
+      src={theme === 'dark' ? '/logo-dark.svg' : '/logo-light.svg'}
+      alt="Logo"
+    />
+  )
+}
+```
+
+## CSS Custom Property Reference
+
+<Accordion title="All CSS Custom Properties">
+<ResponseField name="--background" type="color">
+  Main application background
+</ResponseField>
+
+<ResponseField name="--foreground" type="color">
+  Primary text color
+</ResponseField>
+
+<ResponseField name="--card" type="color">
+  Card/container background
+</ResponseField>
+
+<ResponseField name="--card-foreground" type="color">
+  Text on card backgrounds
+</ResponseField>
+
+<ResponseField name="--popover" type="color">
+  Popover/dropdown background
+</ResponseField>
+
+<ResponseField name="--popover-foreground" type="color">
+  Text in popovers
+</ResponseField>
+
+<ResponseField name="--primary" type="color">
+  Primary brand color
+</ResponseField>
+
+<ResponseField name="--primary-foreground" type="color">
+  Text on primary backgrounds
+</ResponseField>
+
+<ResponseField name="--secondary" type="color">
+  Secondary surface color
+</ResponseField>
+
+<ResponseField name="--secondary-foreground" type="color">
+  Text on secondary surfaces
+</ResponseField>
+
+<ResponseField name="--muted" type="color">
+  Muted/subdued background
+</ResponseField>
+
+<ResponseField name="--muted-foreground" type="color">
+  Muted/secondary text
+</ResponseField>
+
+<ResponseField name="--accent" type="color">
+  Accent hover states
+</ResponseField>
+
+<ResponseField name="--accent-foreground" type="color">
+  Text on accent backgrounds
+</ResponseField>
+
+<ResponseField name="--destructive" type="color">
+  Destructive/error color
+</ResponseField>
+
+<ResponseField name="--destructive-foreground" type="color">
+  Text on destructive backgrounds
+</ResponseField>
+
+<ResponseField name="--border" type="color">
+  Border color
+</ResponseField>
+
+<ResponseField name="--input" type="color">
+  Input background color
+</ResponseField>
+
+<ResponseField name="--ring" type="color">
+  Focus ring color
+</ResponseField>
+
+<ResponseField name="--radius-sm" type="length">
+  Small border radius
+</ResponseField>
+
+<ResponseField name="--radius-md" type="length">
+  Medium border radius
+</ResponseField>
+
+<ResponseField name="--radius-lg" type="length">
+  Large border radius
+</ResponseField>
+</Accordion>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Always test both themes">
+    Every component should be tested in both light and dark mode to ensure proper contrast and legibility.
+    
+    ```tsx
+    // Use theme toggle in development
+    <ThemeToggle />
+    ```
+  </Accordion>
+  
+  <Accordion title="Use semantic tokens">
+    Reference semantic color names (background, foreground, primary) instead of specific color values:
+    
+    ```tsx
+    // Good
+    <div className="bg-background text-foreground" />
+    
+    // Avoid
+    <div style={{ backgroundColor: 'white', color: 'black' }} />
+    ```
+  </Accordion>
+  
+  <Accordion title="Avoid theme-specific logic">
+    Let CSS handle theme switching instead of conditional rendering:
+    
+    ```tsx
+    // Good - CSS handles the theme
+    <div className="bg-card border" />
+    
+    // Avoid - unnecessary JavaScript
+    const { theme } = useTheme()
+    <div className={theme === 'dark' ? 'bg-gray-900' : 'bg-white'} />
+    ```
+  </Accordion>
+  
+  <Accordion title="Prevent flash of unstyled content">
+    Use `suppressHydrationWarning` on the html element and avoid rendering theme-dependent content on the server:
+    
+    ```tsx
+    <html suppressHydrationWarning>
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Color Tokens" href="/tokens/colors">
+    Explore all available color tokens and their values
+  </Card>
+  
+  <Card title="Components" href="/components/overview">
+    See how tokens are used in Conty components
+  </Card>
+</CardGroup>

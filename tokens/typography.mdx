@@ -1,0 +1,466 @@
+---
+title: Typography Tokens
+description: Font family and text size tokens for consistent typography across your application
+---
+
+Conty's typography system provides a carefully crafted type scale with accessible font sizes and a modern font stack.
+
+## Font Family
+
+Conty uses a system font stack with Inter as the primary typeface:
+
+<ResponseField name="fontFamily.sans" type="string" default="Inter, system-ui, sans-serif">
+  Primary sans-serif font stack
+  
+  ```ts
+  semanticTokens.typography.fontFamily.sans
+  // "Inter, system-ui, sans-serif"
+  ```
+  
+  **Fallback chain:**
+  1. **Inter** - Modern, highly legible typeface optimized for UI
+  2. **system-ui** - Native system font (San Francisco on macOS/iOS, Segoe UI on Windows)
+  3. **sans-serif** - Generic sans-serif fallback
+</ResponseField>
+
+### Why Inter?
+
+Inter was chosen for several key advantages:
+
+- **Optimized for screens** - Designed specifically for digital interfaces
+- **Excellent legibility** - Clear at small sizes with distinct letterforms
+- **Wide language support** - Comprehensive Unicode coverage
+- **Variable font support** - Smooth weight and optical size adjustments
+- **Open source** - Free to use in any project
+
+### Font Loading
+
+Conty recommends loading Inter via Google Fonts or self-hosting:
+
+<Tabs>
+  <Tab title="Google Fonts">
+    ```html
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    ```
+  </Tab>
+  
+  <Tab title="Self-Hosted">
+    ```css
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('/fonts/inter-regular.woff2') format('woff2');
+    }
+    
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+      src: url('/fonts/inter-semibold.woff2') format('woff2');
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Next.js">
+    ```tsx
+    // app/layout.tsx
+    import { Inter } from 'next/font/google'
+    
+    const inter = Inter({ 
+      subsets: ['latin'],
+      display: 'swap',
+    })
+    
+    export default function RootLayout({ children }) {
+      return (
+        <html lang="en" className={inter.className}>
+          <body>{children}</body>
+        </html>
+      )
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Text Size Scale
+
+Conty provides a three-step type scale optimized for UI components:
+
+<ResponseField name="text.sm" type="string" default="0.875rem">
+  Small text size (14px at default font size)
+  
+  ```ts
+  semanticTokens.typography.text.sm // "0.875rem"
+  ```
+  
+  **Use cases:**
+  - Captions and helper text
+  - Secondary labels
+  - Meta information (timestamps, counts)
+  - Dense data tables
+  
+  **Line height recommendation:** 1.25 (1.09375rem)
+</ResponseField>
+
+<ResponseField name="text.base" type="string" default="1rem">
+  Base text size (16px at default font size)
+  
+  ```ts
+  semanticTokens.typography.text.base // "1rem"
+  ```
+  
+  **Use cases:**
+  - Body text
+  - Form inputs
+  - Button labels
+  - Default UI text
+  
+  **Line height recommendation:** 1.5 (1.5rem)
+  
+  **Note:** This is the recommended minimum size for body text to ensure readability and accessibility.
+</ResponseField>
+
+<ResponseField name="text.lg" type="string" default="1.125rem">
+  Large text size (18px at default font size)
+  
+  ```ts
+  semanticTokens.typography.text.lg // "1.125rem"
+  ```
+  
+  **Use cases:**
+  - Subheadings
+  - Emphasized text
+  - Lead paragraphs
+  - Card titles
+  
+  **Line height recommendation:** 1.5 (1.6875rem)
+</ResponseField>
+
+## Visual Type Scale
+
+```
+text.sm    14px  The quick brown fox jumps
+text.base  16px  The quick brown fox jumps
+text.lg    18px  The quick brown fox jumps
+```
+
+## Usage Examples
+
+<Tabs>
+  <Tab title="React/TypeScript">
+    ```tsx
+    import { semanticTokens } from '@conty/tokens'
+    
+    function Typography() {
+      return (
+        <div style={{ fontFamily: semanticTokens.typography.fontFamily.sans }}>
+          <h2 style={{ fontSize: semanticTokens.typography.text.lg }}>
+            Card Title
+          </h2>
+          <p style={{ fontSize: semanticTokens.typography.text.base }}>
+            This is the main body text.
+          </p>
+          <span style={{ fontSize: semanticTokens.typography.text.sm }}>
+            Posted 2 hours ago
+          </span>
+        </div>
+      )
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Tailwind CSS">
+    ```jsx
+    <div className="font-sans">
+      <h2 className="text-lg">Card Title</h2>
+      <p className="text-base">This is the main body text.</p>
+      <span className="text-sm">Posted 2 hours ago</span>
+    </div>
+    ```
+    
+    Tailwind classes map to Conty's text tokens:
+    - `text-sm` = 0.875rem
+    - `text-base` = 1rem
+    - `text-lg` = 1.125rem
+  </Tab>
+  
+  <Tab title="CSS">
+    ```css
+    .body-text {
+      font-family: Inter, system-ui, sans-serif;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    
+    .small-text {
+      font-size: 0.875rem;
+      line-height: 1.25;
+    }
+    
+    .large-text {
+      font-size: 1.125rem;
+      line-height: 1.5;
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Real-World Examples
+
+Here's how typography tokens are used in actual Conty components:
+
+<CodeGroup>
+```tsx Card Component
+// From packages/ui/src/components/card.tsx
+function CardTitle({ className, ...props }) {
+  return (
+    <div
+      className="leading-none font-semibold"  // Uses inherited text size
+      {...props}
+    />
+  )
+}
+
+function CardDescription({ className, ...props }) {
+  return (
+    <div
+      className="text-muted-foreground text-sm"  // text-sm = 0.875rem
+      {...props}
+    />
+  )
+}
+```
+
+```tsx Button Component
+// From packages/ui/src/components/button.tsx
+const buttonVariants = cva(
+  "text-sm font-medium ...",  // text-sm = 0.875rem
+  {
+    variants: {
+      size: {
+        default: "h-9",   // Height scales with text
+        sm: "h-8",        // Smaller height for compact buttons
+        lg: "h-10"        // Larger height for prominent buttons
+      }
+    }
+  }
+)
+```
+</CodeGroup>
+
+## Legacy Typography Aliases
+
+For backward compatibility, Conty provides flat aliases:
+
+```ts
+// From packages/tokens/src/index.ts
+export const typography = {
+  fontFamily: semanticTokens.typography.fontFamily.sans,
+  textSm: semanticTokens.typography.text.sm,      // "0.875rem"
+  textBase: semanticTokens.typography.text.base,  // "1rem"
+  textLg: semanticTokens.typography.text.lg       // "1.125rem"
+} as const
+```
+
+<Note>
+  New projects should use the semantic token paths for better organization and extensibility.
+</Note>
+
+## Font Weight Guidelines
+
+While not defined as tokens, Conty follows consistent font weight conventions:
+
+- **400 (Regular)** - Body text, descriptions, paragraphs
+- **500 (Medium)** - Button labels, active states, emphasis
+- **600 (Semibold)** - Headings, card titles, section headers
+- **700 (Bold)** - Major headings, high emphasis (use sparingly)
+
+```tsx
+// Example usage
+<h1 style={{ fontWeight: 600 }}>Page Title</h1>
+<button style={{ fontWeight: 500 }}>Click Me</button>
+<p style={{ fontWeight: 400 }}>Body text content</p>
+```
+
+## Line Height Recommendations
+
+Proper line height improves readability:
+
+```css
+/* Small text - tighter leading */
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25; /* 1.09375rem / ~17.5px */
+}
+
+/* Base and large text - comfortable reading */
+.text-base {
+  font-size: 1rem;
+  line-height: 1.5; /* 1.5rem / 24px */
+}
+
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.5; /* 1.6875rem / ~27px */
+}
+
+/* Headings - tighter for impact */
+h1, h2, h3 {
+  line-height: 1.2;
+}
+```
+
+## Responsive Typography
+
+Typography tokens scale with user font size preferences:
+
+```tsx
+function ResponsiveText() {
+  return (
+    <div style={{ fontSize: semanticTokens.typography.text.base }}>
+      {/* This text automatically scales if user changes browser font size */}
+      This respects user preferences
+    </div>
+  )
+}
+```
+
+<Note>
+  Always use rem units for font sizes instead of px. This is critical for accessibility and user preferences.
+</Note>
+
+## Accessibility Considerations
+
+<AccordionGroup>
+  <Accordion title="Minimum text size">
+    Never use text smaller than `text.sm` (0.875rem / 14px) for body content. This ensures readability for users with visual impairments.
+    
+    ```tsx
+    // Good - uses text.sm for secondary content
+    <span style={{ fontSize: semanticTokens.typography.text.sm }}>
+      Helper text
+    </span>
+    
+    // Avoid - text too small
+    <span style={{ fontSize: '0.75rem' }}>
+      Hard to read
+    </span>
+    ```
+  </Accordion>
+  
+  <Accordion title="Contrast with color tokens">
+    Pair typography tokens with appropriate color tokens for sufficient contrast:
+    
+    ```tsx
+    // Good contrast
+    <p style={{
+      fontSize: semanticTokens.typography.text.base,
+      color: semanticTokens.color.text.default  // High contrast
+    }}>
+      Primary content
+    </p>
+    
+    // Lower contrast - only for secondary content
+    <p style={{
+      fontSize: semanticTokens.typography.text.sm,
+      color: semanticTokens.color.text.muted  // Reduced contrast
+    }}>
+      Secondary information
+    </p>
+    ```
+  </Accordion>
+  
+  <Accordion title="Line length">
+    Limit line length to 60-80 characters for optimal readability:
+    
+    ```css
+    .prose {
+      max-width: 65ch; /* ~65 characters wide */
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Complete Typography Reference
+
+<Accordion title="All Typography Tokens (TypeScript)">
+```ts
+// From packages/tokens/src/index.ts
+export const semanticTokens = {
+  typography: {
+    fontFamily: {
+      sans: "Inter, system-ui, sans-serif"
+    },
+    text: {
+      sm: "0.875rem",   // 14px
+      base: "1rem",     // 16px
+      lg: "1.125rem"    // 18px
+    }
+  }
+} as const
+
+// Legacy aliases
+export const typography = {
+  fontFamily: semanticTokens.typography.fontFamily.sans,
+  textSm: semanticTokens.typography.text.sm,
+  textBase: semanticTokens.typography.text.base,
+  textLg: semanticTokens.typography.text.lg
+} as const
+```
+</Accordion>
+
+## Best Practices
+
+<Steps>
+  <Step title="Use the type scale">
+    Stick to the three defined sizes for UI consistency. Don't create custom font sizes between these steps.
+  </Step>
+  
+  <Step title="Set base size on root">
+    Apply `text.base` as your default body text size:
+    
+    ```css
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    ```
+  </Step>
+  
+  <Step title="Pair with semantic colors">
+    Combine typography tokens with color tokens for accessible, themed text:
+    
+    ```tsx
+    <p style={{
+      fontSize: semanticTokens.typography.text.base,
+      color: semanticTokens.color.text.default
+    }}>
+      Accessible text
+    </p>
+    ```
+  </Step>
+  
+  <Step title="Consider line height">
+    Adjust line height based on text size and context (1.25 for small, 1.5 for body, 1.2 for headings).
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Color Tokens" href="/tokens/colors">
+    Learn about text color tokens and contrast ratios
+  </Card>
+  
+  <Card title="Theming" href="/tokens/theming">
+    Implement dark mode and custom typography themes
+  </Card>
+</CardGroup>

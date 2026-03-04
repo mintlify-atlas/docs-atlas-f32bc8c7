@@ -1,0 +1,194 @@
+---
+title: Design Tokens Overview
+description: A comprehensive guide to Conty's design token system and semantic naming conventions
+---
+
+Design tokens are the fundamental building blocks of the Conty Design System. They provide a consistent, scalable way to manage design decisions across platforms and frameworks.
+
+## Philosophy
+
+Conty's token system is built on three core principles:
+
+1. **Semantic Naming** - Tokens describe purpose, not appearance
+2. **Cross-Platform Support** - Tokens work in CSS, JavaScript, and native platforms
+3. **Theme-Aware** - All tokens automatically adapt to light and dark modes
+
+## Token Architecture
+
+Conty uses a three-layer token architecture that promotes maintainability and consistency:
+
+<Steps>
+  <Step title="Core Tokens">
+    Raw values defined in OKLCH color space and rem units. These are the primitive values that never change based on context.
+    
+    ```ts
+    oklch(0.6248 0.2042 257.0818) // A specific blue color
+    0.25rem // A specific spacing value
+    ```
+  </Step>
+  
+  <Step title="Semantic Tokens">
+    Purpose-driven tokens that reference core tokens. These describe intent rather than appearance.
+    
+    ```ts
+    semanticTokens.color.brand.primary
+    semanticTokens.space[4]
+    semanticTokens.typography.text.base
+    ```
+  </Step>
+  
+  <Step title="Component Tokens">
+    Component-specific tokens that consume semantic tokens, mapped to CSS custom properties.
+    
+    ```css
+    --color-primary: var(--primary)
+    --color-border: var(--border)
+    ```
+  </Step>
+</Steps>
+
+## Token Categories
+
+Conty organizes tokens into logical categories:
+
+<CardGroup cols={2}>
+  <Card title="Colors" icon="palette" href="/tokens/colors">
+    Surface, text, brand, border, and status colors with OKLCH support
+  </Card>
+  
+  <Card title="Spacing" icon="arrows-up-down" href="/tokens/spacing">
+    Consistent spacing scale using rem units for accessibility
+  </Card>
+  
+  <Card title="Typography" icon="font" href="/tokens/typography">
+    Font families, text sizes, and type scale definitions
+  </Card>
+  
+  <Card title="Theming" icon="moon" href="/tokens/theming">
+    Light/dark mode implementation and custom theme creation
+  </Card>
+</CardGroup>
+
+## Why OKLCH?
+
+Conty uses the OKLCH color space for several advantages:
+
+- **Perceptually Uniform** - Equal changes in values result in equal visual differences
+- **Wider Gamut** - Access to more vibrant colors on modern displays
+- **Predictable Lightness** - Lightness values directly correspond to perceived brightness
+- **Better Accessibility** - Easier to maintain WCAG contrast ratios
+
+<Note>
+  OKLCH is supported in all modern browsers (Chrome 111+, Safari 15.4+, Firefox 113+). For older browsers, Conty provides fallback values.
+</Note>
+
+## Usage
+
+Tokens can be accessed in multiple ways depending on your use case:
+
+<Tabs>
+  <Tab title="JavaScript/TypeScript">
+    Import tokens directly from the package:
+    
+    ```ts
+    import { semanticTokens, colors, spacing } from '@conty/tokens'
+    
+    // Use semantic tokens (recommended)
+    const primaryColor = semanticTokens.color.brand.primary
+    const baseSpacing = semanticTokens.space[4]
+    
+    // Use legacy aliases for compatibility
+    const background = colors.background
+    const mediumSpace = spacing.md
+    ```
+  </Tab>
+  
+  <Tab title="CSS">
+    Reference CSS custom properties in your styles:
+    
+    ```css
+    .my-component {
+      background-color: var(--color-background);
+      color: var(--color-foreground);
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Tailwind CSS">
+    Use Tailwind's semantic color classes:
+    
+    ```jsx
+    <div className="bg-background text-foreground p-4 rounded-md">
+      <h1 className="text-primary">Hello World</h1>
+    </div>
+    ```
+  </Tab>
+</Tabs>
+
+## Semantic vs Legacy Tokens
+
+Conty provides both semantic tokens (recommended) and legacy aliases for backward compatibility:
+
+```ts
+// Semantic (recommended) - describes purpose
+semanticTokens.color.brand.primary
+semanticTokens.color.text.default
+semanticTokens.space[4]
+
+// Legacy aliases - maintained for compatibility
+colors.primary
+colors.foreground
+spacing.md
+```
+
+<Note>
+  New projects should use semantic tokens. Legacy aliases are maintained for teams migrating from older versions.
+</Note>
+
+## Migration Guide
+
+If you're using legacy token paths, migrate to semantic tokens:
+
+<CodeGroup>
+```ts Before
+import { colors, spacing } from '@conty/tokens'
+
+const buttonStyle = {
+  backgroundColor: colors.primary,
+  color: colors.primaryForeground,
+  padding: spacing.md
+}
+```
+
+```ts After
+import { semanticTokens } from '@conty/tokens'
+
+const buttonStyle = {
+  backgroundColor: semanticTokens.color.brand.primary,
+  color: semanticTokens.color.text.onBrand,
+  padding: semanticTokens.space[4]
+}
+```
+</CodeGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Explore Color Tokens" href="/tokens/colors">
+    Learn about surface, text, brand, border, and status colors
+  </Card>
+  
+  <Card title="Understand Spacing" href="/tokens/spacing">
+    Master the spacing scale and layout tokens
+  </Card>
+  
+  <Card title="Typography System" href="/tokens/typography">
+    Discover font families and text size tokens
+  </Card>
+  
+  <Card title="Theme Configuration" href="/tokens/theming">
+    Set up light/dark modes and create custom themes
+  </Card>
+</CardGroup>

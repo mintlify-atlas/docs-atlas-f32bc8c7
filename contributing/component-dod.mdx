@@ -1,0 +1,266 @@
+---
+title: Component Definition of Done
+description: Quality criteria that every component must meet before being considered complete
+---
+
+## Overview
+
+The Definition of Done (DoD) ensures consistent quality across all components in the Conty Design System. Every component must meet these criteria before being merged.
+
+<Note>
+  These criteria apply to all components, whether new or updated. Treat this as a checklist for your PRs.
+</Note>
+
+## Minimum Criteria
+
+For a component to be considered ready for production, it must satisfy all of the following:
+
+### 1. Basic Render Story
+
+<Accordion title="Smoke Test Story">
+  Every component must have at least one story that renders the basic, default state.
+
+  **Example:**
+  ```tsx
+  export const Default: StoryObj<typeof Button> = {
+    args: {
+      children: 'Click me',
+    },
+  };
+  ```
+
+  This ensures the component can render without errors in its simplest form.
+</Accordion>
+
+### 2. State Variations
+
+<Accordion title="Relevant States">
+  Components must include stories for all relevant states:
+
+  - **Disabled**: When the component cannot be interacted with
+  - **Loading**: When the component is processing an action
+  - **Error**: When the component is in an error state
+  - **Empty**: When the component has no data (for data components)
+  - **Filled**: When the component has data
+
+  **Example:**
+  ```tsx
+  export const Disabled: StoryObj<typeof Button> = {
+    args: {
+      children: 'Disabled Button',
+      disabled: true,
+    },
+  };
+
+  export const Loading: StoryObj<typeof Button> = {
+    args: {
+      children: 'Loading...',
+      isLoading: true,
+    },
+  };
+  ```
+
+  Not all states apply to all components - use judgment to determine which states are relevant.
+</Accordion>
+
+### 3. Play Test for Interactions
+
+<Accordion title="Interaction Testing">
+  When a component has interactive behavior (clicks, focus, hover, etc.), it must include at least one play test.
+
+  **Example:**
+  ```tsx
+  export const WithInteraction: StoryObj<typeof Button> = {
+    args: {
+      children: 'Click me',
+    },
+    play: async ({ canvasElement, step }) => {
+      const canvas = within(canvasElement);
+      const button = canvas.getByRole('button');
+
+      await step('Click the button', async () => {
+        await userEvent.click(button);
+        await expect(button).toHaveFocus();
+      });
+    },
+  };
+  ```
+
+  Play tests ensure critical interactions work as expected.
+</Accordion>
+
+<Info>
+  Play tests run in real browsers using `@storybook/addon-vitest` and Playwright. They validate component behavior beyond simple rendering.
+</Info>
+
+### 4. Accessibility Checks
+
+<Accordion title="No Critical A11y Violations">
+  Components must pass automated accessibility checks without critical violations.
+
+  The Storybook accessibility addon automatically runs on all stories. Common checks include:
+
+  - Proper ARIA attributes
+  - Color contrast ratios
+  - Keyboard navigation
+  - Screen reader support
+  - Focus management
+
+  **Before merging:**
+  - Open your story in Storybook
+  - Check the Accessibility tab
+  - Resolve any violations marked as "Serious" or "Critical"
+</Accordion>
+
+<Warning>
+  Components with critical accessibility violations will not be merged. Minor issues should be documented and tracked for future improvement.
+</Warning>
+
+### 5. Visual Review
+
+<Accordion title="Visual Regression Coverage">
+  Components must be covered by visual review in the PR process.
+
+  This ensures:
+  - Visual consistency across browsers
+  - No unintended styling changes
+  - Proper rendering of all states
+
+  Visual regression is typically handled via Chromatic or equivalent tooling.
+</Accordion>
+
+### 6. Token Usage (No Hardcoding)
+
+<Accordion title="Use Design Tokens">
+  All visual values must come from design tokens - no hardcoded values.
+
+  **Incorrect:**
+  ```tsx
+  const Button = styled.button`
+    background: #6366f1;
+    padding: 8px 16px;
+    border-radius: 4px;
+  `;
+  ```
+
+  **Correct:**
+  ```tsx
+  const Button = styled.button`
+    background: var(--color-brand-primary);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+  `;
+  ```
+
+  This ensures:
+  - Cross-platform consistency (Web and Flutter)
+  - Theme support (light/dark modes)
+  - Easy maintenance and updates
+</Accordion>
+
+<Note>
+  Before adding a new token, check if an existing semantic token serves your purpose. Only create new tokens when absolutely necessary.
+</Note>
+
+### 7. Documentation
+
+<Accordion title="Usage and Limitations">
+  Components must include documentation covering:
+
+  - **Purpose**: What the component does
+  - **Usage**: How to use it (with code examples)
+  - **Props**: Description of all props and their purpose
+  - **Limitations**: Known constraints or edge cases
+  - **Accessibility**: Any special accessibility considerations
+
+  Documentation can be included in:
+  - Story descriptions
+  - MDX documentation pages
+  - JSDoc comments on component props
+</Accordion>
+
+## Checklist Summary
+
+Use this checklist when submitting a component PR:
+
+- [ ] Basic render story exists (smoke test)
+- [ ] Stories for all relevant states (disabled, loading, error, etc.)
+- [ ] At least one play test for interactive behavior (if applicable)
+- [ ] No critical accessibility violations
+- [ ] Visual regression review passed
+- [ ] All visual values use design tokens (no hardcoding)
+- [ ] Documentation covers usage and limitations
+
+## Beyond the Minimum
+
+While the above criteria are the minimum, consider these enhancements:
+
+- **Multiple play tests** for complex interactions
+- **Responsive behavior** stories for different viewport sizes
+- **RTL support** for internationalization
+- **Performance considerations** for data-heavy components
+- **Edge cases** that might occur in production
+
+## Quality Gates
+
+Automated CI checks will enforce:
+
+- `npm run lint` - Code style and best practices
+- `npm run typecheck` - TypeScript type safety
+- `npm run build` - All packages build successfully
+- Storybook tests - Component tests run in browser
+- Accessibility checks - No critical violations
+- Visual regression - No unintended visual changes
+
+<Info>
+  CI must pass before a PR can be merged. Fix any failing checks before requesting review.
+</Info>
+
+## Token Naming Guidelines
+
+When creating or using tokens:
+
+- Use semantic names: `brand.primary`, `text.muted`, `surface.default`
+- Avoid implementation-coupled names: `purple500`, `buttonBlue`
+- Maintain cross-platform consistency (TypeScript and Dart)
+- Document token purpose and examples
+- Prefer deprecation over renaming existing tokens
+
+## Cross-Platform Flow
+
+When creating a component:
+
+<Steps>
+  <Step title="Create the TSX component in Storybook">
+    Develop and test the component locally.
+  </Step>
+
+  <Step title="Identify visual values">
+    Extract all colors, spacing, typography, shadows, etc.
+  </Step>
+
+  <Step title="Register in tokens.json">
+    Add or reference tokens in the canonical tokens file.
+  </Step>
+
+  <Step title="Reference tokens in component">
+    Replace hardcoded values with token references.
+  </Step>
+
+  <Step title="Maintain semantic consistency">
+    Use the same token names for Dart/Flutter consumption.
+  </Step>
+
+  <Step title="Document new tokens">
+    Explain meaning and provide usage examples.
+  </Step>
+</Steps>
+
+## Examples
+
+Review existing components in Storybook for real-world examples of components that meet the DoD criteria. Look for:
+
+- Button component - Simple interaction patterns
+- Input component - Form states and validation
+- Dialog component - Complex interactions and accessibility
+- Card component - Layout and composition patterns

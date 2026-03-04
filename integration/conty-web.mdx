@@ -1,0 +1,547 @@
+---
+title: 'conty-web Integration'
+description: 'Integrate Conty Design System into the conty-web Next.js application'
+icon: 'globe'
+---
+
+This guide describes the integration of `@conty/design-system` into the `conty-web` project, which uses Next.js 16, React 19, and TypeScript 5.
+
+## Prerequisites
+
+The conty-web stack:
+- **Framework**: Next.js 16 with App Router
+- **React**: Version 19
+- **TypeScript**: Version 5
+- **Current UI Stack**: Tailwind 4 + shadcn/ui + Radix UI
+
+## Installation
+
+<Steps>
+  <Step title="Install the package">
+    In the `conty-web` repository root:
+
+    ```bash
+    npm install @conty/design-system
+    ```
+  </Step>
+
+  <Step title="Import global styles">
+    Add the design system styles to your root layout file:
+
+    ```tsx app/layout.tsx
+    import "@conty/design-system/styles.css"
+    import type { Metadata } from "next"
+
+    export const metadata: Metadata = {
+      title: "Conty",
+      description: "Conty Web Application",
+    }
+
+    export default function RootLayout({
+      children,
+    }: {
+      children: React.ReactNode
+    }) {
+      return (
+        <html lang="en" suppressHydrationWarning>
+          <body>{children}</body>
+        </html>
+      )
+    }
+    ```
+
+    <Warning>
+      Import `@conty/design-system/styles.css` **before** any other custom styles to ensure proper CSS cascade.
+    </Warning>
+  </Step>
+
+  <Step title="Use components">
+    Import components from the design system:
+
+    ```tsx
+    import { Button } from "@conty/design-system"
+
+    export function Example() {
+      return <Button>Salvar</Button>
+    }
+    ```
+  </Step>
+</Steps>
+
+## Component Usage Examples
+
+### Button
+
+The `Button` component replaces the existing button from `src/components/ui/button.tsx`.
+
+<CodeGroup>
+  ```tsx Default Usage
+  import { Button } from "@conty/design-system"
+
+  export function SaveButton() {
+    return (
+      <Button onClick={() => console.log('saved')}>
+        Salvar
+      </Button>
+    )
+  }
+  ```
+
+  ```tsx All Variants
+  import { Button } from "@conty/design-system"
+
+  export function ButtonShowcase() {
+    return (
+      <div className="flex gap-2">
+        <Button variant="default">Default</Button>
+        <Button variant="secondary">Secondary</Button>
+        <Button variant="destructive">Destructive</Button>
+        <Button variant="outline">Outline</Button>
+        <Button variant="ghost">Ghost</Button>
+        <Button variant="link">Link</Button>
+      </div>
+    )
+  }
+  ```
+
+  ```tsx Sizes
+  import { Button } from "@conty/design-system"
+
+  export function ButtonSizes() {
+    return (
+      <div className="flex items-center gap-2">
+        <Button size="sm">Small</Button>
+        <Button size="default">Default</Button>
+        <Button size="lg">Large</Button>
+        <Button size="icon">⚙</Button>
+        <Button size="icon-sm">⚙</Button>
+        <Button size="icon-lg">⚙</Button>
+      </div>
+    )
+  }
+  ```
+
+  ```tsx As Child (Polymorphic)
+  import { Button } from "@conty/design-system"
+  import Link from "next/link"
+
+  export function LinkButton() {
+    return (
+      <Button asChild>
+        <Link href="/dashboard">Go to Dashboard</Link>
+      </Button>
+    )
+  }
+  ```
+</CodeGroup>
+
+**Supported variants** (Wave 1): `default`, `secondary`, `destructive`, `outline`, `ghost`, `link`
+
+**Supported sizes**: `default`, `sm`, `lg`, `icon`, `icon-sm`, `icon-lg`
+
+### Badge
+
+The `Badge` component replaces `src/components/ui/badge.tsx`.
+
+<CodeGroup>
+  ```tsx Basic Usage
+  import { Badge } from "@conty/design-system"
+
+  export function StatusBadge() {
+    return <Badge>Active</Badge>
+  }
+  ```
+
+  ```tsx All Variants
+  import { Badge } from "@conty/design-system"
+
+  export function BadgeShowcase() {
+    return (
+      <div className="flex gap-2">
+        <Badge variant="default">Default</Badge>
+        <Badge variant="secondary">Secondary</Badge>
+        <Badge variant="destructive">Destructive</Badge>
+        <Badge variant="outline">Outline</Badge>
+      </div>
+    )
+  }
+  ```
+
+  ```tsx With Icons
+  import { Badge } from "@conty/design-system"
+  import { CheckIcon } from "lucide-react"
+
+  export function IconBadge() {
+    return (
+      <Badge>
+        <CheckIcon />
+        Verified
+      </Badge>
+    )
+  }
+  ```
+</CodeGroup>
+
+**Supported variants** (Wave 1): `default`, `secondary`, `destructive`, `outline`
+
+<Note>
+  The `warning` variant from the legacy conty-web badge was intentionally excluded from Wave 1 to avoid hardcoded visual values outside the token contract.
+</Note>
+
+### Card
+
+The `Card` component system replaces `src/components/ui/card.tsx` with a composition API.
+
+```tsx
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@conty/design-system"
+
+export function ProfileCard() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>User Profile</CardTitle>
+        <CardDescription>
+          Manage your account settings and preferences
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p>Your profile content goes here.</p>
+      </CardContent>
+      <CardFooter>
+        <Button>Save Changes</Button>
+      </CardFooter>
+    </Card>
+  )
+}
+```
+
+**Available components**: `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`
+
+The composition API is preserved from the legacy implementation for seamless incremental migration.
+
+## Incremental Adoption Strategy
+
+<Warning>
+  Do not attempt a "big bang" migration. Use the incremental approach below to minimize regression risk.
+</Warning>
+
+<Steps>
+  <Step title="Start with low-risk components">
+    Begin migration with foundational, low-risk components:
+
+    - `Button`
+    - `Badge`
+    - `Card`
+
+    These components have:
+    - High usage across the application
+    - Simple, stable APIs
+    - Low risk of regression
+  </Step>
+
+  <Step title="Validate visual semantics">
+    Compare the visual output between the legacy conty-web components and the design system equivalents:
+
+    1. Open the component in Storybook at `http://localhost:6006`
+    2. Compare with the same component in your local conty-web development environment
+    3. Verify spacing, colors, borders, and interactive states match expectations
+    4. Test dark mode rendering
+
+    <Accordion title="Visual Regression Testing Checklist">
+      - [ ] Default state matches legacy component
+      - [ ] Hover states are consistent
+      - [ ] Focus states show proper ring indicators
+      - [ ] Disabled states have correct opacity
+      - [ ] Dark mode colors are appropriate
+      - [ ] Component responds to container sizing
+      - [ ] Icons scale correctly
+    </Accordion>
+  </Step>
+
+  <Step title="Migrate by module">
+    Apply the design system components module by module rather than globally:
+
+    ```tsx
+    // Before (legacy)
+    import { Button } from "@/components/ui/button"
+
+    // After (design system)
+    import { Button } from "@conty/design-system"
+    ```
+
+    **Recommended migration order by module**:
+    1. Authentication/onboarding flows
+    2. Dashboard and main feed
+    3. Settings pages
+    4. Billing and payments
+    5. Advanced features and admin areas
+
+    This approach allows you to:
+    - Validate each module independently
+    - Rollback easily if issues arise
+    - Maintain both legacy and new components during transition
+  </Step>
+
+  <Step title="Use feature flags for sensitive flows">
+    For critical business flows, implement feature flags:
+
+    ```tsx
+    import { Button as DSButton } from "@conty/design-system"
+    import { Button as LegacyButton } from "@/components/ui/button"
+    import { useFeatureFlag } from "@/lib/feature-flags"
+
+    export function CheckoutButton() {
+      const useDesignSystem = useFeatureFlag('design-system-checkout')
+      const Button = useDesignSystem ? DSButton : LegacyButton
+
+      return <Button>Complete Purchase</Button>
+    }
+    ```
+  </Step>
+</Steps>
+
+## Wave 1 Component Migration Baseline
+
+The initial migration wave focuses on three foundational components.
+
+### Migration Mapping
+
+| Legacy Component | Design System | Variants Supported |
+|------------------|---------------|--------------------|
+| `src/components/ui/button.tsx` | `Button` from `@conty/design-system` | `default`, `secondary`, `destructive`, `outline`, `ghost`, `link` |
+| `src/components/ui/badge.tsx` | `Badge` from `@conty/design-system` | `default`, `secondary`, `destructive`, `outline` |
+| `src/components/ui/card.tsx` | `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter` from `@conty/design-system` | Composition API preserved |
+
+### Code Migration Examples
+
+<CodeGroup>
+  ```tsx Button Migration
+  // Before
+  import { Button } from "@/components/ui/button"
+
+  export function SaveForm() {
+    return (
+      <Button variant="default" size="lg">
+        Save Changes
+      </Button>
+    )
+  }
+
+  // After
+  import { Button } from "@conty/design-system"
+
+  export function SaveForm() {
+    return (
+      <Button variant="default" size="lg">
+        Save Changes
+      </Button>
+    )
+  }
+  ```
+
+  ```tsx Badge Migration
+  // Before
+  import { Badge } from "@/components/ui/badge"
+
+  export function StatusLabel({ status }: { status: string }) {
+    return <Badge variant="secondary">{status}</Badge>
+  }
+
+  // After
+  import { Badge } from "@conty/design-system"
+
+  export function StatusLabel({ status }: { status: string }) {
+    return <Badge variant="secondary">{status}</Badge>
+  }
+  ```
+
+  ```tsx Card Migration
+  // Before
+  import {
+    Card,
+    CardHeader,
+    CardTitle,
+    CardContent,
+  } from "@/components/ui/card"
+
+  export function InfoCard() {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>Details here</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // After
+  import {
+    Card,
+    CardHeader,
+    CardTitle,
+    CardContent,
+  } from "@conty/design-system"
+
+  export function InfoCard() {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>Details here</p>
+        </CardContent>
+      </Card>
+    )
+  }
+  ```
+</CodeGroup>
+
+In most cases, migration is a **simple import path change** with no API modifications required.
+
+## Design Tokens Used in Wave 1
+
+All Wave 1 components consume semantic tokens from `@conty/tokens/tokens.json`.
+
+### Token Categories Applied
+
+- **Surface colors**: `color.surface.default`, `color.surface.elevated`, `color.surface.muted`
+- **Text colors**: `color.text.default`, `color.text.muted`, `color.text.onBrand`
+- **Brand colors**: `color.brand.primary`
+- **Border colors**: `color.border.default`, `color.border.focus`
+- **Status colors**: `color.status.destructive`, `color.status.onDestructive`
+- **Spacing**: `space.1` through `space.8`
+- **Radius**: `radius.sm`, `radius.md`, `radius.lg`
+- **Typography**: `typography.fontFamily.sans`, `typography.text.sm`, `typography.text.base`, `typography.text.lg`
+
+### Token Runtime Layer
+
+Tokens are compiled to CSS custom properties in `theme.css`, which serves as the runtime layer for the web:
+
+```css
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.2178 0 0);
+  --primary: oklch(0.6248 0.2042 257.0818);
+  /* ... */
+}
+
+.dark {
+  --background: #0b0d10;
+  --foreground: oklch(0.9551 0 0);
+  /* ... */
+}
+```
+
+### Legacy Token Aliases
+
+The `@conty/tokens` package maintains backward-compatible aliases in `index.ts` for gradual transition:
+
+- `colors` (legacy) → semantic color tokens
+- `spacing` (legacy) → `space.*` tokens
+- `radii` (legacy) → `radius.*` tokens
+- `typography` (legacy) → `typography.*` tokens
+
+This allows existing code to continue working while you migrate to semantic token names.
+
+## Testing Integration
+
+<Steps>
+  <Step title="Visual testing">
+    Compare components side-by-side in Storybook and your local development environment.
+  </Step>
+
+  <Step title="Accessibility validation">
+    Run automated accessibility checks:
+
+    ```bash
+    npm run test:a11y
+    ```
+
+    Ensure no critical violations are introduced.
+  </Step>
+
+  <Step title="Component tests">
+    If you have existing component tests, update imports:
+
+    ```tsx
+    // Update test imports
+    import { Button } from "@conty/design-system"
+    ```
+
+    Verify all existing tests still pass.
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Styles not applying correctly">
+    **Cause**: CSS import order is incorrect.
+
+    **Solution**: Ensure `@conty/design-system/styles.css` is imported before your custom styles:
+
+    ```tsx
+    import "@conty/design-system/styles.css"
+    import "./globals.css" // Your styles
+    ```
+  </Accordion>
+
+  <Accordion title="Dark mode not working">
+    **Cause**: The `dark` class is not being applied to the HTML element.
+
+    **Solution**: Verify your theme provider is configured correctly:
+
+    ```tsx
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      {children}
+    </ThemeProvider>
+    ```
+  </Accordion>
+
+  <Accordion title="TypeScript errors on component props">
+    **Cause**: Peer dependencies may not be installed.
+
+    **Solution**: Ensure React 19 is installed:
+
+    ```bash
+    npm install react@^19.0.0 react-dom@^19.0.0
+    ```
+  </Accordion>
+
+  <Accordion title="Component looks different from Storybook">
+    **Cause**: Missing CSS or token variables.
+
+    **Solution**: Verify the import chain:
+    1. Check that `@conty/design-system/styles.css` is imported
+    2. Inspect the DOM to ensure CSS custom properties are defined
+    3. Clear your build cache: `rm -rf .next && npm run dev`
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Migration Strategy" icon="map" href="/integration/migration">
+    Learn the full incremental migration approach
+  </Card>
+  <Card title="Components Reference" icon="book" href="/components/overview">
+    Explore all available components and APIs
+  </Card>
+  <Card title="Design Tokens" icon="palette" href="/tokens/overview">
+    Deep dive into the token system
+  </Card>
+  <Card title="Storybook" icon="book-open" href="http://localhost:6006" target="_blank">
+    View components in Storybook
+  </Card>
+</CardGroup>

@@ -1,0 +1,138 @@
+---
+title: Components Overview
+description: A comprehensive library of accessible, composable UI components built with Radix UI primitives
+---
+
+# Components Overview
+
+The Conty Design System provides a collection of production-ready React components designed for modern web applications. Each component is built with accessibility, composability, and developer experience as core priorities.
+
+## Design Principles
+
+### Accessibility First
+
+All components are built on [Radix UI](https://www.radix-ui.com/) primitives, ensuring:
+
+- WCAG 2.1 Level AA compliance
+- Keyboard navigation support
+- Screen reader compatibility
+- Focus management
+- ARIA attributes and proper semantics
+
+### Composition Over Configuration
+
+Components are designed to be composable, allowing you to build complex interfaces from simple primitives:
+
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle>Your Title</CardTitle>
+    <CardDescription>A brief description</CardDescription>
+  </CardHeader>
+  <CardContent>
+    {/* Your content */}
+  </CardContent>
+  <CardFooter>
+    <Button>Action</Button>
+  </CardFooter>
+</Card>
+```
+
+### Type Safety
+
+Every component is built with TypeScript and provides full type definitions:
+
+- IntelliSense support in modern editors
+- Compile-time type checking
+- Proper prop validation
+- VariantProps for styled components
+
+### Theming & Customization
+
+Components use class-variance-authority (CVA) for variant management:
+
+- Consistent styling patterns
+- Dark mode support
+- Customizable through className prop
+- CSS variable-based theming
+
+## Component Architecture
+
+### Radix UI Foundation
+
+Conty components leverage Radix UI primitives for complex interactive elements:
+
+- Unstyled, accessible components
+- Composable architecture
+- Uncontrolled and controlled modes
+- Custom event handling
+
+### Styling with Tailwind CSS
+
+All components use Tailwind CSS for styling:
+
+- Utility-first approach
+- Responsive design utilities
+- Custom design tokens
+- Consistent spacing and typography
+
+### Slot Pattern
+
+Many components support the `asChild` prop using Radix UI's Slot component:
+
+```tsx
+<Button asChild>
+  <a href="/dashboard">Go to Dashboard</a>
+</Button>
+```
+
+This pattern allows you to:
+- Merge component functionality with custom elements
+- Maintain proper semantics (e.g., links that look like buttons)
+- Avoid wrapper div proliferation
+
+## Accessibility Features
+
+### Keyboard Navigation
+
+All interactive components support standard keyboard interactions:
+
+- `Tab` and `Shift+Tab` for focus navigation
+- `Enter` and `Space` for activation
+- `Escape` for dismissing overlays
+- Arrow keys for navigation within composite widgets
+
+### Focus Management
+
+Components include focus-visible indicators:
+
+```tsx
+focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]
+```
+
+### ARIA Support
+
+- `aria-invalid` for form validation states
+- `aria-disabled` for disabled states
+- `aria-busy` for loading states
+- Proper role and state attributes
+
+### Screen Reader Support
+
+Components use semantic HTML and ARIA attributes to ensure compatibility with assistive technologies.
+
+## Getting Started
+
+Explore individual component documentation:
+
+- [Button](/components/button) - Trigger actions and navigation
+- [Badge](/components/badge) - Display status and metadata
+- [Card](/components/card) - Contain related content
+
+Each component page includes:
+
+- Complete API documentation
+- TypeScript prop definitions
+- Usage examples
+- Variant demonstrations
+- Accessibility notes

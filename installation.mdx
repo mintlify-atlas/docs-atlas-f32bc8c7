@@ -1,0 +1,365 @@
+---
+title: Installation
+description: Install Conty Design System in your React project with npm, yarn, or pnpm.
+---
+
+# Installation
+
+Conty Design System is distributed as an npm package. This guide will walk you through installing and configuring Conty in your React project.
+
+## Prerequisites
+
+Before installing Conty, ensure your project meets these requirements:
+
+<Steps>
+  <Step title="Node.js >= 20">
+    Conty requires Node.js version 20 or higher.
+    
+    ```bash
+    node --version
+    # Should output v20.x.x or higher
+    ```
+  </Step>
+  
+  <Step title="React 19">
+    Conty is built for React 19. Make sure your project uses compatible versions:
+    
+    ```json package.json
+    {
+      "dependencies": {
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0"
+      }
+    }
+    ```
+  </Step>
+  
+  <Step title="TypeScript (Recommended)">
+    While not required, TypeScript is highly recommended for the best developer experience.
+    
+    ```bash
+    npm install -D typescript
+    ```
+  </Step>
+</Steps>
+
+## Install the Package
+
+Install the main design system package using your preferred package manager:
+
+<CodeGroup>
+
+```bash npm
+npm install @conty/design-system
+```
+
+```bash yarn
+yarn add @conty/design-system
+```
+
+```bash pnpm
+pnpm add @conty/design-system
+```
+
+</CodeGroup>
+
+<Info>
+  The `@conty/design-system` package automatically includes `@conty/tokens` and `@conty/ui` as dependencies.
+</Info>
+
+## Peer Dependencies
+
+Conty has the following peer dependencies that should already be in your project:
+
+```json package.json
+{
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
+```
+
+If you don't have these installed, add them:
+
+<CodeGroup>
+
+```bash npm
+npm install react react-dom
+```
+
+```bash yarn
+yarn add react react-dom
+```
+
+```bash pnpm
+pnpm add react react-dom
+```
+
+</CodeGroup>
+
+## Import Styles
+
+Conty requires you to import its CSS file in your application entry point.
+
+<Tabs>
+  <Tab title="Next.js">
+    Import the styles in your root layout or `_app.tsx`:
+    
+    ```tsx app/layout.tsx
+    import '@conty/design-system/styles.css'
+    
+    export default function RootLayout({
+      children,
+    }: {
+      children: React.ReactNode
+    }) {
+      return (
+        <html lang="en">
+          <body>{children}</body>
+        </html>
+      )
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Vite">
+    Import the styles in your `main.tsx` or `App.tsx`:
+    
+    ```tsx src/main.tsx
+    import React from 'react'
+    import ReactDOM from 'react-dom/client'
+    import '@conty/design-system/styles.css'
+    import App from './App'
+    
+    ReactDOM.createRoot(document.getElementById('root')!).render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    )
+    ```
+  </Tab>
+  
+  <Tab title="Create React App">
+    Import the styles in your `index.tsx`:
+    
+    ```tsx src/index.tsx
+    import React from 'react'
+    import ReactDOM from 'react-dom/client'
+    import '@conty/design-system/styles.css'
+    import App from './App'
+    
+    const root = ReactDOM.createRoot(
+      document.getElementById('root') as HTMLElement
+    )
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    )
+    ```
+  </Tab>
+</Tabs>
+
+<Note>
+  The `styles.css` file includes both the design tokens (`@conty/tokens/theme.css`) and component styles (`@conty/ui/styles.css`).
+</Note>
+
+## TypeScript Configuration
+
+For optimal TypeScript support, configure your `tsconfig.json`:
+
+```json tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true
+  }
+}
+```
+
+<Info>
+  Conty is built as ESM modules. Make sure your bundler (Vite, Next.js, etc.) supports ESM.
+</Info>
+
+## Tailwind CSS Configuration (Optional)
+
+If you're using Tailwind CSS in your project, you may want to extend your configuration to use Conty's design tokens:
+
+```js tailwind.config.js
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    './src/**/*.{js,jsx,ts,tsx}',
+    './node_modules/@conty/ui/dist/**/*.js',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+        primary: 'var(--primary)',
+        'primary-foreground': 'var(--primary-foreground)',
+        secondary: 'var(--secondary)',
+        'secondary-foreground': 'var(--secondary-foreground)',
+        muted: 'var(--muted)',
+        'muted-foreground': 'var(--muted-foreground)',
+        border: 'var(--border)',
+        destructive: 'var(--destructive)',
+      },
+      borderRadius: {
+        sm: 'var(--radius-sm)',
+        md: 'var(--radius-md)',
+        lg: 'var(--radius-lg)',
+      },
+    },
+  },
+}
+```
+
+<Warning>
+  Conty components already include all necessary Tailwind classes. You only need to configure Tailwind if you want to use the design tokens in your own custom components.
+</Warning>
+
+## Dark Mode Setup
+
+Conty's dark mode works by toggling a `.dark` class on a parent element (usually `<html>` or `<body>`).
+
+<Tabs>
+  <Tab title="Next.js (next-themes)">
+    Install and configure `next-themes`:
+    
+    ```bash
+    npm install next-themes
+    ```
+    
+    ```tsx app/providers.tsx
+    'use client'
+    
+    import { ThemeProvider } from 'next-themes'
+    
+    export function Providers({ children }: { children: React.ReactNode }) {
+      return (
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+        </ThemeProvider>
+      )
+    }
+    ```
+    
+    ```tsx app/layout.tsx
+    import { Providers } from './providers'
+    import '@conty/design-system/styles.css'
+    
+    export default function RootLayout({ children }) {
+      return (
+        <html lang="en" suppressHydrationWarning>
+          <body>
+            <Providers>{children}</Providers>
+          </body>
+        </html>
+      )
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Manual Toggle">
+    Implement a simple dark mode toggle:
+    
+    ```tsx
+    import { useState, useEffect } from 'react'
+    
+    export function useDarkMode() {
+      const [isDark, setIsDark] = useState(false)
+    
+      useEffect(() => {
+        const root = window.document.documentElement
+        if (isDark) {
+          root.classList.add('dark')
+        } else {
+          root.classList.remove('dark')
+        }
+      }, [isDark])
+    
+      return [isDark, setIsDark] as const
+    }
+    ```
+    
+    Use in your component:
+    
+    ```tsx
+    import { Button } from '@conty/design-system'
+    import { useDarkMode } from './useDarkMode'
+    
+    export function App() {
+      const [isDark, setIsDark] = useDarkMode()
+      
+      return (
+        <Button onClick={() => setIsDark(!isDark)}>
+          Toggle {isDark ? 'Light' : 'Dark'} Mode
+        </Button>
+      )
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Verify Installation
+
+Create a simple test component to verify everything is working:
+
+```tsx src/App.tsx
+import { Button, Card, CardHeader, CardTitle, CardContent } from '@conty/design-system'
+
+export default function App() {
+  return (
+    <div className="p-8">
+      <Card>
+        <CardHeader>
+          <CardTitle>Installation Successful!</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Button>Click me</Button>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+```
+
+If you see a styled card with a button, you're all set!
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Styles not loading">
+    Make sure you've imported `@conty/design-system/styles.css` in your application entry point. Check your bundler's configuration to ensure it can handle CSS imports.
+  </Accordion>
+  
+  <Accordion title="TypeScript errors">
+    Ensure you're using TypeScript 5.0+ and that your `tsconfig.json` has `moduleResolution: "bundler"` or `"node16"`.
+  </Accordion>
+  
+  <Accordion title="Peer dependency warnings">
+    Make sure you have React 19 installed. Conty requires `react@^19.0.0` and `react-dom@^19.0.0`.
+  </Accordion>
+  
+  <Accordion title="Dark mode not working">
+    Verify that the `.dark` class is being applied to your `<html>` or root element. Check browser DevTools to inspect the class.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<Card title="Quick Start Guide" icon="rocket" href="/quickstart">
+  Now that you have Conty installed, follow our quick start guide to build your first component.
+</Card>

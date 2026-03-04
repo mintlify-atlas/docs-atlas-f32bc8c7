@@ -1,97 +1,242 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+mode: "custom"
 ---
 
-## Setting up
+<div className="relative overflow-hidden bg-gradient-to-br from-[#0f1117] via-[#1a1d27] to-[#0f1117] dark:bg-gradient-to-br dark:from-[#0f1117] dark:via-[#1a1d27] dark:to-[#0f1117] py-20 px-4 sm:px-6 lg:px-8">
+  <div className="max-w-7xl mx-auto">
+    <div className="lg:grid lg:grid-cols-12 lg:gap-8 items-center">
+      <div className="lg:col-span-7">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white dark:text-white mb-6">
+          Build consistent UIs with <span className="text-[#6366f1]">Conty Design System</span>
+        </h1>
+        <p className="text-lg sm:text-xl text-gray-300 dark:text-gray-300 max-w-2xl mb-8">
+          A Storybook-first React design system with semantic tokens, reusable components, and cross-platform support for building beautiful, accessible interfaces.
+        </p>
+        <div className="flex flex-wrap gap-4">
+          <a
+            href="/quickstart"
+            className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-[#6366f1] text-white font-semibold hover:bg-[#4f46e5] transition-colors no-underline"
+          >
+            Get Started
+          </a>
+          <a
+            href="/components/overview"
+            className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-white/30 bg-white/10 text-white font-semibold hover:bg-white/20 transition-colors no-underline"
+          >
+            Explore Components
+          </a>
+        </div>
+      </div>
+      <div className="hidden lg:block lg:col-span-5">
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#6366f1] to-[#818cf8] rounded-2xl blur-3xl opacity-20"></div>
+          <div className="relative bg-[#1a1d27] dark:bg-[#1a1d27] rounded-2xl border border-[#27272a] dark:border-[#27272a] p-8">
+            <div className="space-y-4">
+              <div className="h-10 bg-[#6366f1] rounded-lg"></div>
+              <div className="h-10 bg-[#242838] dark:bg-[#242838] rounded-lg"></div>
+              <div className="h-10 bg-[#242838] dark:bg-[#242838] rounded-lg"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-Get your documentation site up and running in minutes.
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white mb-4">
+    Quick Start
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Get up and running with the Conty Design System in minutes.
+  </p>
+  
+  <Steps>
+    <Step title="Install the package">
+      Install the design system package in your React project using your preferred package manager.
+      
+      <CodeGroup>
+      ```bash npm
+      npm install @conty/design-system
+      ```
+      
+      ```bash yarn
+      yarn add @conty/design-system
+      ```
+      
+      ```bash pnpm
+      pnpm add @conty/design-system
+      ```
+      </CodeGroup>
+    </Step>
+    
+    <Step title="Import styles">
+      Add the design system styles to your application's root layout or entry point.
+      
+      ```tsx
+      import "@conty/design-system/styles.css"
+      ```
+    </Step>
+    
+    <Step title="Use components">
+      Start using components in your application.
+      
+      ```tsx
+      import { Button, Badge, Card } from "@conty/design-system"
+      
+      export function Example() {
+        return (
+          <Card>
+            <h2>Welcome</h2>
+            <p>Start building with Conty Design System</p>
+            <Button>Get Started</Button>
+            <Badge>New</Badge>
+          </Card>
+        )
+      }
+      ```
+    </Step>
+  </Steps>
+</div>
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white mb-4">
+    Explore by topic
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Learn about the key concepts and features of the design system.
+  </p>
+  
+  <CardGroup cols={2}>
     <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+      title="Design Tokens"
+      icon="palette"
+      href="/tokens/overview"
+    >
+      Explore semantic tokens for colors, spacing, typography, and theming with cross-platform support.
+    </Card>
+    <Card
+      title="Components"
+      icon="cube"
+      href="/components/overview"
+    >
+      Browse the component library with detailed API documentation and usage examples.
+    </Card>
+    <Card
+      title="Integration Guide"
+      icon="plug"
+      href="/integration/setup"
+    >
+      Learn how to integrate the design system into your existing projects.
+    </Card>
+    <Card
+      title="Contributing"
+      icon="code-pull-request"
+      href="/contributing/guidelines"
+    >
+      Contribute to the design system with our Storybook-first development workflow.
+    </Card>
+  </CardGroup>
+</div>
 
-## Create beautiful pages
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white mb-4">
+    Key features
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Everything you need to build consistent, accessible user interfaces.
+  </p>
+  
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#27272a] rounded-xl p-6">
+      <div className="text-[#6366f1] mb-3">
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+        </svg>
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Semantic Tokens</h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Cross-platform design tokens with semantic naming for colors, spacing, and typography.
+      </p>
+    </div>
+    
+    <div className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#27272a] rounded-xl p-6">
+      <div className="text-[#6366f1] mb-3">
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Storybook-First</h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        All components developed and documented in Storybook for consistent quality.
+      </p>
+    </div>
+    
+    <div className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#27272a] rounded-xl p-6">
+      <div className="text-[#6366f1] mb-3">
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Type-Safe Variants</h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Built with class-variance-authority for type-safe component variants and props.
+      </p>
+    </div>
+    
+    <div className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#27272a] rounded-xl p-6">
+      <div className="text-[#6366f1] mb-3">
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Dark Mode Support</h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Built-in light and dark theme support with CSS custom properties.
+      </p>
+    </div>
+    
+    <div className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#27272a] rounded-xl p-6">
+      <div className="text-[#6366f1] mb-3">
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Radix UI Powered</h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Components built on Radix UI primitives for accessibility and composability.
+      </p>
+    </div>
+    
+    <div className="bg-white dark:bg-[#1a1d27] border border-gray-200 dark:border-[#27272a] rounded-xl p-6">
+      <div className="text-[#6366f1] mb-3">
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Incremental Migration</h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Adopt gradually with a proven migration strategy for existing projects.
+      </p>
+    </div>
+  </div>
+</div>
 
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <div className="bg-gradient-to-r from-[#6366f1] to-[#818cf8] rounded-2xl p-8 sm:p-12">
+    <div className="text-center">
+      <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+        Ready to get started?
+      </h2>
+      <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
+        Follow our quickstart guide to add the Conty Design System to your project and start building consistent interfaces.
+      </p>
+      <a
+        href="/quickstart"
+        className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-white text-[#6366f1] font-semibold hover:bg-gray-100 transition-colors no-underline"
+      >
+        Get Started Now
+      </a>
+    </div>
+  </div>
+</div>

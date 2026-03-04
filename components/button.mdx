@@ -1,0 +1,335 @@
+---
+title: Button
+description: A versatile button component with multiple variants and sizes for triggering actions and navigation
+---
+
+# Button
+
+The Button component is a foundational interactive element built with Radix UI's Slot primitive, supporting multiple variants, sizes, and the ability to render as any element.
+
+## Installation
+
+The Button component is available as part of the `@conty/ui` package:
+
+```bash
+npm install @conty/ui
+```
+
+## Usage
+
+### Basic Button
+
+```tsx
+import { Button } from "@conty/ui"
+
+export default function Example() {
+  return <Button>Click me</Button>
+}
+```
+
+### Button Variants
+
+<CodeGroup>
+
+```tsx Default
+<Button variant="default">Default</Button>
+```
+
+```tsx Secondary
+<Button variant="secondary">Secondary</Button>
+```
+
+```tsx Outline
+<Button variant="outline">Outline</Button>
+```
+
+```tsx Destructive
+<Button variant="destructive">Destructive</Button>
+```
+
+```tsx Ghost
+<Button variant="ghost">Ghost</Button>
+```
+
+```tsx Link
+<Button variant="link">Link</Button>
+```
+
+</CodeGroup>
+
+### Button Sizes
+
+<CodeGroup>
+
+```tsx Small
+<Button size="sm">Small</Button>
+```
+
+```tsx Default
+<Button size="default">Default</Button>
+```
+
+```tsx Large
+<Button size="lg">Large</Button>
+```
+
+```tsx Icon Small
+<Button size="icon-sm">
+  <IconPlus />
+</Button>
+```
+
+```tsx Icon
+<Button size="icon">
+  <IconPlus />
+</Button>
+```
+
+```tsx Icon Large
+<Button size="icon-lg">
+  <IconPlus />
+</Button>
+```
+
+</CodeGroup>
+
+### With Icons
+
+```tsx
+import { Button } from "@conty/ui"
+import { IconDownload } from "@tabler/icons-react"
+
+export default function Example() {
+  return (
+    <>
+      <Button>
+        <IconDownload />
+        Download
+      </Button>
+      
+      <Button size="icon">
+        <IconDownload />
+      </Button>
+    </>
+  )
+}
+```
+
+### As Child (Polymorphic)
+
+Use the `asChild` prop to render the button as a different element while maintaining button styling:
+
+```tsx
+import { Button } from "@conty/ui"
+
+export default function Example() {
+  return (
+    <Button asChild>
+      <a href="/dashboard">Go to Dashboard</a>
+    </Button>
+  )
+}
+```
+
+### Disabled State
+
+```tsx
+<Button disabled>Disabled</Button>
+```
+
+### Loading State
+
+```tsx
+<Button disabled aria-busy="true">
+  Loading...
+</Button>
+```
+
+## API Reference
+
+### Button Props
+
+The Button component extends all standard HTML button attributes and adds the following:
+
+<ParamField path="variant" type="string" default="default">
+  The visual style variant of the button.
+  
+  Options:
+  - `default` - Primary button with filled background
+  - `destructive` - For destructive actions (delete, remove, etc.)
+  - `outline` - Outlined button with transparent background
+  - `secondary` - Secondary emphasis button
+  - `ghost` - Minimal button without border
+  - `link` - Text button with underline on hover
+</ParamField>
+
+<ParamField path="size" type="string" default="default">
+  The size of the button.
+  
+  Options:
+  - `default` - Standard button height (h-9)
+  - `sm` - Small button (h-8)
+  - `lg` - Large button (h-10)
+  - `icon` - Square icon button (size-9)
+  - `icon-sm` - Small square icon button (size-8)
+  - `icon-lg` - Large square icon button (size-10)
+</ParamField>
+
+<ParamField path="asChild" type="boolean" default="false">
+  When true, the button will render as a Slot component, merging props with its child element. This is useful for rendering buttons as links or other elements.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, disables the button and prevents user interaction.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the button.
+</ParamField>
+
+### TypeScript Definition
+
+```tsx
+import { VariantProps } from "class-variance-authority"
+
+type ButtonProps = React.ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean
+  }
+```
+
+## Styling Details
+
+### Base Styles
+
+The button includes these base styles from ~/workspace/source/packages/ui/src/components/button.tsx:7-8:
+
+- Flexbox layout with gap for icon spacing
+- Rounded corners (rounded-md)
+- Medium font weight
+- Smooth transitions (300ms cubic-bezier easing)
+- Focus-visible ring for accessibility
+- Active scale animation (0.98)
+- Disabled state with reduced opacity
+- SVG icon sizing and constraints
+
+### Variant Styles
+
+**Default** (`variant="default"`):
+- Primary brand color background
+- White text on dark backgrounds
+- Subtle shadow
+- 90% opacity on hover
+
+**Destructive** (`variant="destructive"`):
+- Red/destructive color background
+- White text
+- Red focus ring
+- Dark mode: 60% opacity destructive background
+
+**Outline** (`variant="outline"`):
+- Border with transparent background
+- Accent background on hover
+- Dark mode: Input-based colors
+
+**Secondary** (`variant="secondary"`):
+- Secondary color background
+- Subtle shadow
+- 80% opacity on hover
+
+**Ghost** (`variant="ghost"`):
+- No background or border
+- Accent background on hover
+- Minimal visual weight
+
+**Link** (`variant="link"`):
+- Primary text color
+- Underline on hover
+- No background
+
+### Size Classes
+
+From ~/workspace/source/packages/ui/src/components/button.tsx:23-30:
+
+- `default`: h-9, px-4, py-2
+- `sm`: h-8, px-3, gap-1.5
+- `lg`: h-10, px-6
+- `icon`: size-9 (square)
+- `icon-sm`: size-8 (square)
+- `icon-lg`: size-10 (square)
+
+Buttons with icons have adjusted padding using the `has-[>svg]` selector.
+
+## Accessibility
+
+### Keyboard Support
+
+- `Enter` or `Space` activates the button
+- `Tab` moves focus to the next focusable element
+- `Shift+Tab` moves focus to the previous focusable element
+
+### Focus Management
+
+The button includes visible focus indicators:
+
+```tsx
+focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]
+```
+
+### ARIA Attributes
+
+- Use `aria-busy="true"` for loading states
+- Use `aria-invalid="true"` for error states (displays red focus ring)
+- The `disabled` prop automatically adds `aria-disabled`
+
+### Screen Reader Support
+
+- Uses semantic `<button>` element by default
+- When using `asChild` with links, ensure proper `role` attributes if needed
+- For icon-only buttons, include `aria-label` or `title`:
+
+```tsx
+<Button size="icon" aria-label="Download file">
+  <IconDownload />
+</Button>
+```
+
+<Note>
+  When using the `asChild` prop with a link, the component renders as an anchor element with button styling. Ensure you're using the appropriate element for your use case to maintain proper semantics.
+</Note>
+
+## Best Practices
+
+1. **Use semantic variants**: Choose destructive for dangerous actions, primary for main CTAs, and secondary for alternative actions
+2. **Icon buttons need labels**: Always provide `aria-label` for icon-only buttons
+3. **Loading states**: Use `disabled` and `aria-busy` together for loading states
+4. **Link semantics**: Use `asChild` with anchor tags for navigation, not `onClick` handlers
+5. **Consistent sizing**: Use the same size buttons in button groups for visual harmony
+
+## Examples
+
+### Button Group
+
+```tsx
+<div className="flex gap-2">
+  <Button variant="outline">Cancel</Button>
+  <Button>Confirm</Button>
+</div>
+```
+
+### Icon Button with Tooltip
+
+```tsx
+<Button size="icon" aria-label="Settings">
+  <IconSettings />
+</Button>
+```
+
+### Form Submit Button
+
+```tsx
+<form onSubmit={handleSubmit}>
+  {/* form fields */}
+  <Button type="submit">Submit</Button>
+</form>
+```

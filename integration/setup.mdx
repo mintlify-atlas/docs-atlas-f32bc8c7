@@ -1,0 +1,399 @@
+---
+title: 'General Setup'
+description: 'Install and configure Conty Design System in any React project'
+icon: 'wrench'
+---
+
+This guide covers the initial setup of `@conty/design-system` for any React-based project, including Next.js, Vite, and Create React App.
+
+## Installation
+
+<Steps>
+  <Step title="Install the package">
+    Install the design system package via npm:
+
+    ```bash
+    npm install @conty/design-system
+    ```
+
+    <Note>
+      The package requires React 19.0.0 or higher as a peer dependency.
+    </Note>
+  </Step>
+
+  <Step title="Import global styles">
+    Import the design system styles in your application's root layout or main entry file.
+
+    <CodeGroup>
+      ```tsx Next.js (app/layout.tsx)
+      import "@conty/design-system/styles.css"
+      import type { Metadata } from "next"
+
+      export const metadata: Metadata = {
+        title: "My App",
+        description: "Built with Conty Design System",
+      }
+
+      export default function RootLayout({
+        children,
+      }: {
+        children: React.ReactNode
+      }) {
+        return (
+          <html lang="en">
+            <body>{children}</body>
+          </html>
+        )
+      }
+      ```
+
+      ```tsx Vite (main.tsx)
+      import React from 'react'
+      import ReactDOM from 'react-dom/client'
+      import "@conty/design-system/styles.css"
+      import App from './App.tsx'
+
+      ReactDOM.createRoot(document.getElementById('root')!).render(
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>,
+      )
+      ```
+
+      ```tsx Create React App (index.tsx)
+      import React from 'react';
+      import ReactDOM from 'react-dom/client';
+      import "@conty/design-system/styles.css"
+      import './index.css';
+      import App from './App';
+
+      const root = ReactDOM.createRoot(
+        document.getElementById('root') as HTMLElement
+      );
+      root.render(
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      );
+      ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Use components">
+    Import and use components from the design system:
+
+    ```tsx
+    import { Button, Badge, Card } from "@conty/design-system"
+
+    export function Example() {
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle>Welcome</CardTitle>
+            <CardDescription>
+              Get started with Conty Design System
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p>Start building with consistent, accessible components.</p>
+          </CardContent>
+          <CardFooter>
+            <Button>Get Started</Button>
+            <Badge variant="secondary">New</Badge>
+          </CardFooter>
+        </Card>
+      )
+    }
+    ```
+  </Step>
+</Steps>
+
+## CSS Import Order
+
+<Warning>
+  **Critical:** The order of CSS imports matters for proper styling and specificity.
+</Warning>
+
+The design system's `styles.css` imports dependencies in this order:
+
+```css
+@import "@conty/tokens/theme.css";
+@import "@conty/ui/styles.css";
+```
+
+When combining with your own styles:
+
+```tsx
+// 1. Design system styles first
+import "@conty/design-system/styles.css"
+
+// 2. Your global styles after
+import "./globals.css"
+```
+
+This ensures:
+- Design tokens are available first
+- Component styles are properly loaded
+- Your custom styles can override defaults when needed
+
+## Dark Mode Support
+
+The design system includes built-in dark mode support using CSS variables.
+
+### Next.js with next-themes
+
+<Steps>
+  <Step title="Install next-themes">
+    ```bash
+    npm install next-themes
+    ```
+  </Step>
+
+  <Step title="Create theme provider">
+    ```tsx app/providers.tsx
+    "use client"
+
+    import { ThemeProvider } from "next-themes"
+
+    export function Providers({ children }: { children: React.ReactNode }) {
+      return (
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      )
+    }
+    ```
+  </Step>
+
+  <Step title="Wrap your layout">
+    ```tsx app/layout.tsx
+    import "@conty/design-system/styles.css"
+    import { Providers } from "./providers"
+
+    export default function RootLayout({
+      children,
+    }: {
+      children: React.ReactNode
+    }) {
+      return (
+        <html lang="en" suppressHydrationWarning>
+          <body>
+            <Providers>{children}</Providers>
+          </body>
+        </html>
+      )
+    }
+    ```
+
+    <Note>
+      The `suppressHydrationWarning` prop prevents hydration warnings from theme switching.
+    </Note>
+  </Step>
+</Steps>
+
+### Vite or CRA
+
+For non-Next.js apps, apply the dark mode class manually:
+
+```tsx
+import { useEffect, useState } from 'react'
+
+function App() {
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+
+  useEffect(() => {
+    const root = document.documentElement
+    if (theme === 'dark') {
+      root.classList.add('dark')
+    } else {
+      root.classList.remove('dark')
+    }
+  }, [theme])
+
+  return (
+    <div>
+      <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+        Toggle theme
+      </button>
+      {/* Your app */}
+    </div>
+  )
+}
+```
+
+## Server-Side Rendering (SSR)
+
+The design system is fully compatible with SSR environments.
+
+### Next.js App Router
+
+Components work seamlessly in Server Components:
+
+```tsx app/page.tsx
+import { Button, Card, CardHeader, CardTitle } from "@conty/design-system"
+
+// This is a Server Component by default
+export default function Page() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Server Rendered</CardTitle>
+      </CardHeader>
+    </Card>
+  )
+}
+```
+
+For interactive components, mark them as Client Components:
+
+```tsx app/interactive-button.tsx
+"use client"
+
+import { Button } from "@conty/design-system"
+
+export function InteractiveButton() {
+  return (
+    <Button onClick={() => console.log('clicked')}>
+      Click me
+    </Button>
+  )
+}
+```
+
+### Next.js Pages Router
+
+No special configuration needed:
+
+```tsx pages/index.tsx
+import { Button } from "@conty/design-system"
+
+export default function Home() {
+  return <Button>Hello World</Button>
+}
+```
+
+### Avoiding Hydration Mismatches
+
+When using theme providers, ensure the initial render matches the server:
+
+```tsx
+import { ThemeProvider } from "next-themes"
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      // Prevents flash of unstyled content
+      disableTransitionOnChange
+    >
+      {children}
+    </ThemeProvider>
+  )
+}
+```
+
+## TypeScript Support
+
+The design system is written in TypeScript and includes full type definitions.
+
+```tsx
+import type { ComponentProps } from "react"
+import { Button } from "@conty/design-system"
+
+// Component props are fully typed
+type ButtonProps = ComponentProps<typeof Button>
+
+function MyButton(props: ButtonProps) {
+  return <Button {...props} />
+}
+
+// Variants are type-safe
+<Button variant="default" size="lg">Typed Button</Button>
+<Button variant="invalid"> {/* TypeScript error */}
+```
+
+## Design Tokens
+
+The design system uses semantic design tokens from `@conty/tokens`. These tokens are defined in `tokens.json` and compiled to CSS variables.
+
+### Available Token Categories
+
+- **Colors**: `color.surface.*`, `color.text.*`, `color.brand.*`, `color.border.*`, `color.status.*`
+- **Spacing**: `space.1` through `space.8`
+- **Radius**: `radius.sm`, `radius.md`, `radius.lg`
+- **Typography**: `typography.fontFamily.sans`, `typography.text.*`
+
+### Using Tokens in Custom Styles
+
+Tokens are available as CSS variables:
+
+```css
+.custom-element {
+  background: var(--background);
+  color: var(--foreground);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  border: 1px solid var(--border);
+}
+
+.dark .custom-element {
+  /* Dark mode values are automatically applied */
+}
+```
+
+## Tailwind CSS Integration
+
+The design system components use Tailwind CSS internally. If your project also uses Tailwind:
+
+<Warning>
+  Ensure your Tailwind config doesn't conflict with design system styles.
+</Warning>
+
+```js tailwind.config.js
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      // Extend rather than override
+      colors: {
+        // Your custom colors
+      },
+    },
+  },
+  plugins: [],
+}
+```
+
+Import order should be:
+
+```tsx
+import "@conty/design-system/styles.css"
+import "./tailwind.css" // Your Tailwind styles
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="conty-web Integration" icon="code" href="/integration/conty-web">
+    Specific integration guide for the conty-web project
+  </Card>
+  <Card title="Migration Guide" icon="arrow-right-arrow-left" href="/integration/migration">
+    Migrate from existing UI libraries incrementally
+  </Card>
+  <Card title="Components" icon="puzzle-piece" href="/components/overview">
+    Explore available components and their APIs
+  </Card>
+  <Card title="Design Tokens" icon="palette" href="/tokens/overview">
+    Learn about the design token system
+  </Card>
+</CardGroup>

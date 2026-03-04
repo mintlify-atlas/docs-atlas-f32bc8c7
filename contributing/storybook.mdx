@@ -1,0 +1,504 @@
+---
+title: Storybook Development Workflow
+description: Learn how to develop components in Storybook using CSF3, play tests, and best practices
+---
+
+## Overview
+
+Storybook is the official development environment for the Conty Design System. Every component is born, tested, and validated in Storybook before being used in production.
+
+<Note>
+  Stories are not just documentation - they are executable test cases covering rendering, interaction, accessibility, and visual regression.
+</Note>
+
+## Getting Started
+
+Start the Storybook development server:
+
+```bash
+npm run storybook
+```
+
+Storybook will open at `http://localhost:6006`.
+
+## Component Story Format 3 (CSF3)
+
+We use CSF3 for all stories. This format provides better TypeScript support and cleaner syntax.
+
+### Basic Story Structure
+
+```tsx
+import type { Meta, StoryObj } from '@storybook/react';
+import { Button } from './Button';
+
+const meta: Meta<typeof Button> = {
+  title: 'Components/Button',
+  component: Button,
+  tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['primary', 'secondary', 'outline'],
+    },
+  },
+};
+
+export default meta;
+type Story = StoryObj<typeof Button>;
+
+export const Primary: Story = {
+  args: {
+    children: 'Primary Button',
+    variant: 'primary',
+  },
+};
+
+export const Secondary: Story = {
+  args: {
+    children: 'Secondary Button',
+    variant: 'secondary',
+  },
+};
+```
+
+### Meta Configuration
+
+The `Meta` object configures your component's stories:
+
+- **title**: Navigation path in Storybook sidebar
+- **component**: The React component being documented
+- **tags**: Add `'autodocs'` to generate automatic documentation
+- **argTypes**: Control types for interactive props
+- **decorators**: Wrappers for stories (providers, themes, etc.)
+- **parameters**: Story-level configuration
+
+## Reusable Args
+
+Define common args at the meta level to reduce repetition:
+
+```tsx
+const meta: Meta<typeof Input> = {
+  title: 'Forms/Input',
+  component: Input,
+  args: {
+    // Default args for all stories
+    placeholder: 'Enter text...',
+  },
+};
+
+export const Default: Story = {}; // Uses default args
+
+export const WithLabel: Story = {
+  args: {
+    label: 'Email',
+    type: 'email',
+    // Inherits placeholder from meta
+  },
+};
+```
+
+## Decorators
+
+Decorators wrap stories with providers, themes, or layout containers.
+
+### Story-Level Decorator
+
+```tsx
+export const WithTheme: Story = {
+  args: {
+    children: 'Themed Button',
+  },
+  decorators: [
+    (Story) => (
+      <div className="dark" style={{ padding: '2rem' }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+```
+
+### Component-Level Decorator
+
+```tsx
+const meta: Meta<typeof Dialog> = {
+  title: 'Overlays/Dialog',
+  component: Dialog,
+  decorators: [
+    (Story) => (
+      <div style={{ minHeight: '400px' }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+```
+
+### Global Decorators
+
+Global decorators are configured in `.storybook/preview.tsx` for theme providers, i18n, and other app-wide context:
+
+```tsx
+// .storybook/preview.tsx
+import { ThemeProvider } from 'next-themes';
+
+export const decorators = [
+  (Story) => (
+    <ThemeProvider attribute="class" defaultTheme="light">
+      <Story />
+    </ThemeProvider>
+  ),
+];
+```
+
+<Info>
+  Global decorators apply to all stories automatically. Use them for app-wide providers like theme, i18n, or routing.
+</Info>
+
+## Play Tests
+
+Play tests enable interaction testing within Storybook. They run automatically and validate component behavior.
+
+### Basic Play Test
+
+```tsx
+import { within, userEvent, expect } from '@storybook/test';
+
+export const ClickInteraction: Story = {
+  args: {
+    children: 'Click me',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button');
+    
+    await userEvent.click(button);
+    await expect(button).toHaveFocus();
+  },
+};
+```
+
+### Multi-Step Play Test
+
+```tsx
+export const FormValidation: Story = {
+  args: {
+    onSubmit: fn(),
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    
+    await step('Fill out the form', async () => {
+      const emailInput = canvas.getByLabelText('Email');
+      await userEvent.type(emailInput, 'user@example.com');
+      
+      const passwordInput = canvas.getByLabelText('Password');
+      await userEvent.type(passwordInput, 'securePassword123');
+    });
+    
+    await step('Submit the form', async () => {
+      const submitButton = canvas.getByRole('button', { name: /submit/i });
+      await userEvent.click(submitButton);
+    });
+    
+    await step('Verify submission', async () => {
+      await expect(canvas.getByText('Success!')).toBeInTheDocument();
+    });
+  },
+};
+```
+
+### Testing Async Behavior
+
+```tsx
+import { waitFor } from '@storybook/test';
+
+export const LoadingState: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button');
+    
+    await userEvent.click(button);
+    
+    // Wait for loading state
+    await waitFor(() => {
+      expect(canvas.getByText('Loading...')).toBeInTheDocument();
+    });
+    
+    // Wait for loaded state
+    await waitFor(
+      () => {
+        expect(canvas.getByText('Data loaded')).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
+  },
+};
+```
+
+<Note>
+  Play tests run in real browsers using `@storybook/addon-vitest` and Playwright, ensuring high-fidelity interaction testing.
+</Note>
+
+## Running Tests
+
+### In Storybook UI
+
+Play tests run automatically when you view a story. Check the "Interactions" panel to see test results.
+
+### In CI
+
+Run component tests in CI:
+
+```bash
+# Run all Storybook tests
+vitest --project=storybook
+
+# Build Storybook with tests
+npm run build-storybook -- --test
+```
+
+<Info>
+  Storybook tests run in a browser environment with Playwright, providing realistic interaction testing.
+</Info>
+
+## Accessibility Testing
+
+Storybook includes the accessibility addon (`@storybook/addon-a11y`) which automatically checks stories for violations.
+
+### Viewing A11y Results
+
+1. Open a story in Storybook
+2. Click the "Accessibility" tab in the addons panel
+3. Review any violations
+4. Fix critical and serious issues before merging
+
+### Configuring A11y Checks
+
+```tsx
+export const CustomA11y: Story = {
+  parameters: {
+    a11y: {
+      config: {
+        rules: [
+          {
+            id: 'color-contrast',
+            enabled: true,
+          },
+        ],
+      },
+    },
+  },
+};
+```
+
+<Warning>
+  Components with critical accessibility violations will not be merged. Always check the Accessibility tab before submitting a PR.
+</Warning>
+
+## Visual Regression Testing
+
+Visual regression ensures components look correct across browsers and prevents unintended styling changes.
+
+### Setup
+
+Visual regression is typically handled by Chromatic or equivalent tooling in CI.
+
+### Best Practices
+
+- Create stories for all visual states
+- Use consistent viewport sizes
+- Test both light and dark themes
+- Include responsive breakpoints
+
+### Example: Multiple Viewports
+
+```tsx
+export const Responsive: Story = {
+  parameters: {
+    viewport: {
+      defaultViewport: 'mobile1',
+    },
+  },
+};
+
+export const Desktop: Story = {
+  parameters: {
+    viewport: {
+      defaultViewport: 'desktop',
+    },
+  },
+};
+```
+
+## MCP Integration
+
+The Storybook MCP addon (`@storybook/addon-mcp`) is enabled and provides an endpoint for AI agents.
+
+### Validate MCP
+
+Check that MCP is working:
+
+```bash
+curl http://localhost:6006/mcp
+```
+
+<Note>
+  AI agents should consult the MCP endpoint before generating or modifying UI stories. Include MCP validation in your local setup checklist.
+</Note>
+
+## Parameters
+
+Parameters customize story behavior and appearance.
+
+### Common Parameters
+
+```tsx
+export const WithCustomParams: Story = {
+  parameters: {
+    // Layout
+    layout: 'centered', // 'centered' | 'fullscreen' | 'padded'
+    
+    // Backgrounds
+    backgrounds: {
+      default: 'dark',
+      values: [
+        { name: 'dark', value: '#1a1a1a' },
+        { name: 'light', value: '#ffffff' },
+      ],
+    },
+    
+    // Actions
+    actions: {
+      disable: true,
+    },
+    
+    // Documentation
+    docs: {
+      description: {
+        story: 'This story demonstrates custom parameters.',
+      },
+    },
+  },
+};
+```
+
+## Development Workflow
+
+<Steps>
+  <Step title="Create component file">
+    Start with a basic component implementation in `packages/ui/src/`.
+  </Step>
+
+  <Step title="Create story file">
+    Add a `.stories.tsx` file next to your component.
+  </Step>
+
+  <Step title="Write basic stories">
+    Create stories for default state and common variations.
+  </Step>
+
+  <Step title="Add play tests">
+    Implement interaction tests for critical behaviors.
+  </Step>
+
+  <Step title="Check accessibility">
+    Review the Accessibility tab and fix violations.
+  </Step>
+
+  <Step title="Verify tokens">
+    Ensure all visual values use design tokens.
+  </Step>
+
+  <Step title="Document usage">
+    Add descriptions and documentation to your stories.
+  </Step>
+</Steps>
+
+## Best Practices
+
+### Story Naming
+
+- Use descriptive names: `WithIcon`, `Loading`, `Disabled`
+- Group related stories with naming conventions
+- Avoid generic names like `Story1`, `Test`
+
+### Story Organization
+
+```tsx
+// States
+export const Default: Story = { /* ... */ };
+export const Disabled: Story = { /* ... */ };
+export const Loading: Story = { /* ... */ };
+export const Error: Story = { /* ... */ };
+
+// Variants
+export const Primary: Story = { /* ... */ };
+export const Secondary: Story = { /* ... */ };
+export const Outline: Story = { /* ... */ };
+
+// Sizes
+export const Small: Story = { /* ... */ };
+export const Medium: Story = { /* ... */ };
+export const Large: Story = { /* ... */ };
+
+// Complex scenarios
+export const WithIcon: Story = { /* ... */ };
+export const WithLongText: Story = { /* ... */ };
+```
+
+### Coverage as a Barometer
+
+Use test coverage as a risk indicator, not a target:
+
+- Don't chase 100% coverage blindly
+- Focus on critical paths and edge cases
+- Use coverage gaps to identify untested scenarios
+
+### Performance
+
+For fast CI pipelines, consider:
+
+```bash
+npm run build-storybook -- --test
+```
+
+This builds Storybook with tests included, optimizing CI performance.
+
+## Continuous Publishing
+
+Storybook should be published continuously for review:
+
+- Designers can review visual implementation
+- Product can validate features
+- Historical versions serve as documentation
+
+## Examples
+
+Review existing component stories in the Storybook for real-world examples:
+
+- **Button**: Basic interactions and states
+- **Input**: Form validation and accessibility
+- **Dialog**: Complex interactions and focus management
+- **Select**: Keyboard navigation and ARIA patterns
+
+## Troubleshooting
+
+### Stories not appearing
+
+- Check the `title` path in your meta configuration
+- Ensure the file ends with `.stories.tsx`
+- Restart the Storybook server
+
+### Play tests failing
+
+- Check the Interactions panel for error details
+- Verify element selectors (use `getByRole` when possible)
+- Add `waitFor` for async operations
+
+### Accessibility violations
+
+- Review the Accessibility tab for specific issues
+- Check color contrast ratios
+- Verify ARIA attributes and semantic HTML
+- Test keyboard navigation manually

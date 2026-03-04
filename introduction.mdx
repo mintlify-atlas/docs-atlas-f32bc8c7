@@ -1,0 +1,167 @@
+---
+title: Introduction
+description: A modern, production-ready React design system built with TypeScript, Tailwind CSS, and Radix UI primitives.
+---
+
+# Introduction to Conty Design System
+
+Conty Design System is a comprehensive, modular design system built for modern React applications. Built with TypeScript, Tailwind CSS, and Radix UI primitives, it provides a complete foundation for building consistent, accessible user interfaces.
+
+## What is Conty?
+
+Conty is a monorepo-based design system that follows best practices for component architecture, theming, and developer experience. It's designed to be:
+
+- **Type-safe**: Full TypeScript support with comprehensive type definitions
+- **Accessible**: Built on Radix UI primitives with ARIA compliance
+- **Themeable**: CSS custom properties with built-in dark mode support
+- **Modern**: Uses latest React 19, ESM modules, and Tailwind CSS v4
+- **Developer-friendly**: Simple API, excellent DX, and Storybook integration
+
+## Architecture
+
+Conty is organized as a monorepo with multiple packages that work together:
+
+<CardGroup cols={3}>
+  <Card title="@conty/tokens" icon="palette">
+    Design tokens and theme system with CSS custom properties, semantic color tokens, spacing, typography, and dark mode support.
+  </Card>
+  
+  <Card title="@conty/ui" icon="cube">
+    React component library with Button, Card, Badge, and more. Built with CVA for variants and Radix UI for accessibility.
+  </Card>
+  
+  <Card title="@conty/design-system" icon="box">
+    Entry package that re-exports all UI components and provides a single import point for consumers.
+  </Card>
+</CardGroup>
+
+### Package Structure
+
+```
+@conty/design-system-monorepo/
+├── packages/
+│   ├── design-system/    # Main entry package
+│   ├── tokens/           # Design tokens & theme
+│   ├── ui/               # React components
+│   ├── eslint-config/    # Shared ESLint config
+│   └── tsconfig/         # TypeScript presets
+└── apps/
+    └── storybook/        # Component documentation
+```
+
+## Key Features
+
+### Design Tokens
+
+Conty uses a semantic token system built with CSS custom properties:
+
+```typescript
+import { semanticTokens } from '@conty/tokens'
+
+// Access tokens programmatically
+semanticTokens.color.brand.primary      // oklch(0.6248 0.2042 257.0818)
+semanticTokens.space[4]                  // 1rem
+semanticTokens.radius.md                 // 0.625rem
+```
+
+<Info>
+  Tokens are defined using OKLCH color space for perceptually uniform colors across light and dark modes.
+</Info>
+
+### Component Variants
+
+Components use [class-variance-authority](https://cva.style) for type-safe variant management:
+
+```tsx
+import { Button } from '@conty/design-system'
+
+// All variants are fully typed
+<Button variant="default" size="lg">Click me</Button>
+<Button variant="destructive" size="sm">Delete</Button>
+<Button variant="outline" size="icon">⚙️</Button>
+```
+
+### Dark Mode Support
+
+Built-in dark mode using CSS custom properties:
+
+```css
+/* Automatically responds to .dark class */
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.2178 0 0);
+}
+
+.dark {
+  --background: #0b0d10;
+  --foreground: oklch(0.9551 0 0);
+}
+```
+
+### Composition with asChild
+
+Many components support the `asChild` prop for flexible composition:
+
+```tsx
+import { Button } from '@conty/design-system'
+import { Link } from 'react-router-dom'
+
+// Render as a Link while maintaining Button styles
+<Button asChild>
+  <Link to="/dashboard">Go to Dashboard</Link>
+</Button>
+```
+
+## Technology Stack
+
+<Steps>
+  <Step title="React 19">
+    Latest React with improved performance and new features
+  </Step>
+  
+  <Step title="TypeScript 5.9">
+    Full type safety with latest TypeScript features
+  </Step>
+  
+  <Step title="Tailwind CSS v4">
+    Utility-first CSS with CSS custom properties integration
+  </Step>
+  
+  <Step title="Radix UI">
+    Accessible primitives for complex components (Slot, etc.)
+  </Step>
+  
+  <Step title="Class Variance Authority">
+    Type-safe component variants with excellent DX
+  </Step>
+</Steps>
+
+## Browser Support
+
+Conty Design System supports all modern browsers:
+
+- Chrome/Edge (last 2 versions)
+- Firefox (last 2 versions)
+- Safari (last 2 versions)
+
+<Warning>
+  OKLCH color space requires modern browser support. For older browsers, consider using a PostCSS plugin to convert OKLCH to sRGB.
+</Warning>
+
+## Requirements
+
+- **Node.js**: >= 20
+- **React**: ^19.0.0
+- **React DOM**: ^19.0.0
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Get started by installing Conty in your project
+  </Card>
+  
+  <Card title="Quick Start" icon="rocket" href="/quickstart">
+    Build your first component in under 5 minutes
+  </Card>
+</CardGroup>

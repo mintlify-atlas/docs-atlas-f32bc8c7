@@ -1,0 +1,435 @@
+---
+title: Spacing Tokens
+description: Consistent spacing and layout tokens using rem units for accessibility
+---
+
+Conty's spacing system provides a predictable, scalable spacing scale built on rem units. This ensures consistent layouts that respect user font size preferences.
+
+## Spacing Scale
+
+The spacing scale follows a logical progression optimized for component layouts:
+
+<ResponseField name="space[1]" type="string" default="0.25rem">
+  Extra small spacing (4px at default font size)
+  
+  ```ts
+  semanticTokens.space[1] // "0.25rem"
+  ```
+  
+  **Use cases:** Icon padding, tight gaps, small adjustments
+</ResponseField>
+
+<ResponseField name="space[2]" type="string" default="0.5rem">
+  Small spacing (8px at default font size)
+  
+  ```ts
+  semanticTokens.space[2] // "0.5rem"
+  ```
+  
+  **Use cases:** Compact layouts, internal component spacing
+</ResponseField>
+
+<ResponseField name="space[3]" type="string" default="0.75rem">
+  Medium-small spacing (12px at default font size)
+  
+  ```ts
+  semanticTokens.space[3] // "0.75rem"
+  ```
+  
+  **Use cases:** Default gaps between related elements
+</ResponseField>
+
+<ResponseField name="space[4]" type="string" default="1rem">
+  Base spacing (16px at default font size)
+  
+  ```ts
+  semanticTokens.space[4] // "1rem"
+  ```
+  
+  **Use cases:** Standard padding, default margins, general spacing
+  
+  **Note:** This is the base unit that aligns with default body text size
+</ResponseField>
+
+<ResponseField name="space[6]" type="string" default="1.5rem">
+  Large spacing (24px at default font size)
+  
+  ```ts
+  semanticTokens.space[6] // "1.5rem"
+  ```
+  
+  **Use cases:** Section spacing, card padding, generous gaps
+</ResponseField>
+
+<ResponseField name="space[8]" type="string" default="2rem">
+  Extra large spacing (32px at default font size)
+  
+  ```ts
+  semanticTokens.space[8] // "2rem"
+  ```
+  
+  **Use cases:** Page-level spacing, major section breaks
+</ResponseField>
+
+## Visual Scale Reference
+
+```
+space[1]  ▪ 0.25rem (4px)
+space[2]  ▪▪ 0.5rem (8px)
+space[3]  ▪▪▪ 0.75rem (12px)
+space[4]  ▪▪▪▪ 1rem (16px)
+space[6]  ▪▪▪▪▪▪ 1.5rem (24px)
+space[8]  ▪▪▪▪▪▪▪▪ 2rem (32px)
+```
+
+## Legacy Spacing Aliases
+
+For teams migrating from older versions, Conty provides named aliases:
+
+```ts
+// From packages/tokens/src/index.ts
+export const spacing = {
+  xs: semanticTokens.space[1],  // 0.25rem
+  sm: semanticTokens.space[2],  // 0.5rem
+  md: semanticTokens.space[4],  // 1rem
+  lg: semanticTokens.space[6],  // 1.5rem
+  xl: semanticTokens.space[8]   // 2rem
+} as const
+```
+
+<Note>
+  The numeric scale (space[1], space[2], etc.) is recommended for new projects as it's more flexible and easier to extend.
+</Note>
+
+## Usage Examples
+
+<Tabs>
+  <Tab title="React/TypeScript">
+    Import spacing tokens directly:
+    
+    ```tsx
+    import { semanticTokens } from '@conty/tokens'
+    
+    function Card({ children }) {
+      return (
+        <div style={{
+          padding: semanticTokens.space[6],
+          gap: semanticTokens.space[4]
+        }}>
+          {children}
+        </div>
+      )
+    }
+    ```
+    
+    Or use legacy aliases:
+    
+    ```tsx
+    import { spacing } from '@conty/tokens'
+    
+    function Card({ children }) {
+      return (
+        <div style={{
+          padding: spacing.lg,
+          gap: spacing.md
+        }}>
+          {children}
+        </div>
+      )
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Tailwind CSS">
+    Tailwind's spacing scale is automatically configured:
+    
+    ```jsx
+    <div className="p-6 gap-4">
+      <div className="mb-2">Small margin</div>
+      <div className="mt-8">Large margin</div>
+    </div>
+    ```
+    
+    The numbers map directly to Conty's space tokens:
+    - `p-1` = space[1] (0.25rem)
+    - `p-2` = space[2] (0.5rem)
+    - `p-4` = space[4] (1rem)
+    - `p-6` = space[6] (1.5rem)
+    - `p-8` = space[8] (2rem)
+  </Tab>
+  
+  <Tab title="CSS Custom Properties">
+    While spacing tokens don't map to CSS variables by default, you can create your own:
+    
+    ```css
+    :root {
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+    }
+    
+    .card {
+      padding: var(--space-6);
+      gap: var(--space-4);
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Real-World Examples
+
+Here's how spacing tokens are used in actual Conty components:
+
+<CodeGroup>
+```tsx Card Component
+// From packages/ui/src/components/card.tsx
+function Card({ className, ...props }) {
+  return (
+    <div
+      className="flex flex-col gap-6 py-6"  // gap-6 = 1.5rem, py-6 = 1.5rem
+      {...props}
+    />
+  )
+}
+
+function CardHeader({ className, ...props }) {
+  return (
+    <div
+      className="gap-2 px-6"  // gap-2 = 0.5rem, px-6 = 1.5rem
+      {...props}
+    />
+  )
+}
+```
+
+```tsx Button Component
+// From packages/ui/src/components/button.tsx
+const buttonVariants = cva(
+  "gap-2 ...",  // gap-2 = 0.5rem between icon and text
+  {
+    variants: {
+      size: {
+        default: "px-4 py-2",      // 1rem horizontal, 0.5rem vertical
+        sm: "gap-1.5 px-3",        // 0.375rem gap, 0.75rem padding
+        lg: "px-6"                 // 1.5rem horizontal padding
+      }
+    }
+  }
+)
+```
+</CodeGroup>
+
+## Responsive Spacing
+
+Spacing tokens scale automatically with font size changes:
+
+```css
+/* User has default font size (16px) */
+.card { padding: 1rem; } /* 16px */
+
+/* User increases font size to 20px */
+.card { padding: 1rem; } /* Now 20px */
+```
+
+This makes your layouts more accessible and responsive to user preferences.
+
+<Note>
+  Always use rem units for spacing instead of px to respect user font size settings. This is crucial for accessibility.
+</Note>
+
+## Spacing Patterns
+
+Common spacing patterns in Conty components:
+
+<Steps>
+  <Step title="Component Internal Padding">
+    Use `space[4]` or `space[6]` for comfortable internal padding:
+    
+    ```tsx
+    <div style={{ padding: semanticTokens.space[6] }}>
+      Content
+    </div>
+    ```
+  </Step>
+  
+  <Step title="Element Gaps">
+    Use `space[2]` to `space[4]` for gaps between related elements:
+    
+    ```tsx
+    <div style={{ display: 'flex', gap: semanticTokens.space[4] }}>
+      <Icon />
+      <Text>Label</Text>
+    </div>
+    ```
+  </Step>
+  
+  <Step title="Section Spacing">
+    Use `space[6]` or `space[8]` for spacing between major sections:
+    
+    ```tsx
+    <section style={{ marginBottom: semanticTokens.space[8] }}>
+      Section content
+    </section>
+    ```
+  </Step>
+  
+  <Step title="Tight Spacing">
+    Use `space[1]` for icons, badges, and compact layouts:
+    
+    ```tsx
+    <Badge style={{ padding: `${semanticTokens.space[1]} ${semanticTokens.space[2]}` }}>
+      New
+    </Badge>
+    ```
+  </Step>
+</Steps>
+
+## Border Radius Tokens
+
+While not spacing per se, border radius tokens follow a similar scale:
+
+<ResponseField name="radius.sm" type="string" default="0.525rem">
+  Small border radius (8.4px at default font size)
+  
+  ```ts
+  semanticTokens.radius.sm // "0.525rem"
+  ```
+  
+  **CSS Custom Property:** `--radius-sm`
+</ResponseField>
+
+<ResponseField name="radius.md" type="string" default="0.625rem">
+  Medium border radius (10px at default font size)
+  
+  ```ts
+  semanticTokens.radius.md // "0.625rem"
+  ```
+  
+  **CSS Custom Property:** `--radius-md`
+</ResponseField>
+
+<ResponseField name="radius.lg" type="string" default="0.725rem">
+  Large border radius (11.6px at default font size)
+  
+  ```ts
+  semanticTokens.radius.lg // "0.725rem"
+  ```
+  
+  **CSS Custom Property:** `--radius-lg`
+</ResponseField>
+
+### Radius Usage
+
+```tsx
+import { semanticTokens } from '@conty/tokens'
+
+function Button() {
+  return (
+    <button style={{ borderRadius: semanticTokens.radius.md }}>
+      Click me
+    </button>
+  )
+}
+```
+
+## Complete Spacing Reference
+
+<Accordion title="All Spacing Tokens (TypeScript)">
+```ts
+// From packages/tokens/src/index.ts
+export const semanticTokens = {
+  space: {
+    1: "0.25rem",
+    2: "0.5rem",
+    3: "0.75rem",
+    4: "1rem",
+    6: "1.5rem",
+    8: "2rem"
+  },
+  radius: {
+    sm: "0.525rem",
+    md: "0.625rem",
+    lg: "0.725rem"
+  }
+} as const
+
+// Legacy aliases
+export const spacing = {
+  xs: semanticTokens.space[1],  // "0.25rem"
+  sm: semanticTokens.space[2],  // "0.5rem"
+  md: semanticTokens.space[4],  // "1rem"
+  lg: semanticTokens.space[6],  // "1.5rem"
+  xl: semanticTokens.space[8]   // "2rem"
+} as const
+
+export const radii = {
+  sm: semanticTokens.radius.sm,  // "0.525rem"
+  md: semanticTokens.radius.md,  // "0.625rem"
+  lg: semanticTokens.radius.lg   // "0.725rem"
+} as const
+```
+</Accordion>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Use rem, not px">
+    Always use the token values (rem) instead of hardcoding pixel values. This ensures your spacing scales with user font size preferences.
+    
+    ```tsx
+    // Good
+    padding: semanticTokens.space[4]
+    
+    // Avoid
+    padding: '16px'
+    ```
+  </Accordion>
+  
+  <Accordion title="Consistent spacing hierarchy">
+    Maintain visual hierarchy by using larger spacing for more important separations:
+    
+    - Related items: space[2] - space[3]
+    - Component internal: space[4] - space[6]
+    - Sections: space[6] - space[8]
+  </Accordion>
+  
+  <Accordion title="Don't create new spacing values">
+    Stick to the defined scale. If you need intermediate values, you're likely overthinking the design.
+    
+    ```tsx
+    // Good
+    gap: semanticTokens.space[4]
+    
+    // Avoid
+    gap: '0.875rem' // Not in the scale
+    ```
+  </Accordion>
+  
+  <Accordion title="Use Flexbox/Grid gap">
+    Prefer `gap` over margins when spacing flex/grid children:
+    
+    ```tsx
+    // Good
+    <div style={{ display: 'flex', gap: semanticTokens.space[4] }}>
+    
+    // Less ideal
+    <div style={{ display: 'flex' }}>
+      <Child style={{ marginRight: semanticTokens.space[4] }} />
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Typography Tokens" href="/tokens/typography">
+    Explore font families and text size tokens
+  </Card>
+  
+  <Card title="Color Tokens" href="/tokens/colors">
+    Learn about the color system and OKLCH
+  </Card>
+</CardGroup>

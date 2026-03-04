@@ -1,0 +1,328 @@
+---
+title: Badge
+description: A compact component for displaying status, labels, and metadata with multiple visual variants
+---
+
+# Badge
+
+The Badge component displays short pieces of information like status indicators, labels, counts, or categories. Built with Radix UI's Slot primitive, it supports polymorphic rendering and multiple visual variants.
+
+## Installation
+
+The Badge component is available as part of the `@conty/ui` package:
+
+```bash
+npm install @conty/ui
+```
+
+## Usage
+
+### Basic Badge
+
+```tsx
+import { Badge } from "@conty/ui"
+
+export default function Example() {
+  return <Badge>New</Badge>
+}
+```
+
+### Badge Variants
+
+<CodeGroup>
+
+```tsx Default
+<Badge variant="default">Default</Badge>
+```
+
+```tsx Secondary
+<Badge variant="secondary">Secondary</Badge>
+```
+
+```tsx Destructive
+<Badge variant="destructive">Destructive</Badge>
+```
+
+```tsx Warning
+<Badge variant="warning">Warning</Badge>
+```
+
+```tsx Outline
+<Badge variant="outline">Outline</Badge>
+```
+
+</CodeGroup>
+
+### With Icons
+
+```tsx
+import { Badge } from "@conty/ui"
+import { IconCheck, IconX, IconAlertTriangle } from "@tabler/icons-react"
+
+export default function Example() {
+  return (
+    <>
+      <Badge variant="default">
+        <IconCheck />
+        Verified
+      </Badge>
+      
+      <Badge variant="destructive">
+        <IconX />
+        Failed
+      </Badge>
+      
+      <Badge variant="warning">
+        <IconAlertTriangle />
+        Warning
+      </Badge>
+    </>
+  )
+}
+```
+
+### As Child (Polymorphic)
+
+Use the `asChild` prop to render the badge as a different element:
+
+```tsx
+import { Badge } from "@conty/ui"
+
+export default function Example() {
+  return (
+    <Badge asChild variant="outline">
+      <a href="/notifications">3 new</a>
+    </Badge>
+  )
+}
+```
+
+<Note>
+  When rendered as a link using `asChild`, badges automatically receive hover states with enhanced shadows and background changes.
+</Note>
+
+### Status Indicators
+
+```tsx
+<div className="flex items-center gap-2">
+  <Badge variant="default">Active</Badge>
+  <Badge variant="warning">Pending</Badge>
+  <Badge variant="destructive">Inactive</Badge>
+</div>
+```
+
+### Notification Count
+
+```tsx
+<button className="relative">
+  <IconBell />
+  <Badge className="absolute -top-2 -right-2" variant="destructive">
+    5
+  </Badge>
+</button>
+```
+
+## API Reference
+
+### Badge Props
+
+The Badge component extends all standard HTML span attributes and adds the following:
+
+<ParamField path="variant" type="string" default="default">
+  The visual style variant of the badge.
+  
+  Options:
+  - `default` - Primary brand colored badge
+  - `secondary` - Secondary emphasis badge
+  - `destructive` - For errors, failures, or critical status
+  - `warning` - For warnings and alerts (amber color)
+  - `outline` - Outlined badge with transparent background
+</ParamField>
+
+<ParamField path="asChild" type="boolean" default="false">
+  When true, the badge will render as a Slot component, merging props with its child element. Useful for rendering badges as links or other interactive elements.
+</ParamField>
+
+<ParamField path="className" type="string">
+  Additional CSS classes to apply to the badge.
+</ParamField>
+
+### TypeScript Definition
+
+```tsx
+import { VariantProps } from "class-variance-authority"
+
+type BadgeProps = React.ComponentProps<"span"> &
+  VariantProps<typeof badgeVariants> & {
+    asChild?: boolean
+  }
+```
+
+## Styling Details
+
+### Base Styles
+
+The badge includes these base styles from ~/workspace/source/packages/ui/src/components/badge.tsx:7-8:
+
+- Inline-flex layout with center alignment
+- Rounded corners (rounded-md)
+- Border for definition
+- Compact padding (px-2, py-0.5)
+- Extra small text (text-xs)
+- Medium font weight
+- Fits content width with no wrapping
+- SVG icon sizing (size-3)
+- Focus-visible ring for accessibility
+- Smooth color transitions
+
+### Variant Styles
+
+**Default** (`variant="default"`):
+- Primary brand color background
+- White/contrasting text
+- Transparent border
+- Hover: 90% opacity (when used as link)
+- Hover: Subtle shadow (when used as link)
+
+**Secondary** (`variant="secondary"`):
+- Secondary color background
+- Secondary foreground text
+- Transparent border
+- Hover states for links
+
+**Destructive** (`variant="destructive"`):
+- Red/destructive color background
+- White text
+- Transparent border
+- Red focus ring
+- Dark mode: 60% opacity destructive background
+- Hover states for links
+
+**Warning** (`variant="warning"`):
+- Amber-500 background
+- White text
+- Transparent border
+- Hover: 90% opacity (when used as link)
+
+**Outline** (`variant="outline"`):
+- Transparent background
+- Border visible
+- Foreground text color
+- Hover: Accent background (when used as link)
+- Hover: Accent text color (when used as link)
+
+### Interactive States
+
+From ~/workspace/source/packages/ui/src/components/badge.tsx:13-21, badges support interactive hover states when rendered as links using the `[a&]` selector:
+
+```css
+[a&]:hover:bg-primary/90 [a&]:hover:shadow-sm
+```
+
+This means badges automatically gain hover effects when used with `asChild` as anchor elements.
+
+## Accessibility
+
+### Keyboard Support
+
+When used as an interactive element (with `asChild` as a button or link):
+
+- `Enter` or `Space` activates the badge (if button)
+- `Enter` follows the link (if anchor)
+- `Tab` moves focus to the next focusable element
+
+### Focus Management
+
+Interactive badges include visible focus indicators:
+
+```tsx
+focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]
+```
+
+### ARIA Attributes
+
+- Use `aria-invalid="true"` for error states (displays red focus ring)
+- For purely decorative badges, consider `aria-hidden="true"`
+- For status badges, ensure the status is also conveyed in nearby text for screen readers
+
+### Screen Reader Support
+
+- Uses semantic `<span>` element by default
+- When displaying status, ensure context is clear:
+
+```tsx
+<div>
+  <span className="sr-only">Status: </span>
+  <Badge variant="default">Active</Badge>
+</div>
+```
+
+- For icon-only badges, include accessible text:
+
+```tsx
+<Badge>
+  <IconCheck />
+  <span className="sr-only">Verified</span>
+</Badge>
+```
+
+## Best Practices
+
+1. **Keep text concise**: Badges work best with 1-3 words or short numbers
+2. **Use semantic variants**: Match variant to meaning (destructive for errors, warning for alerts)
+3. **Don't overuse**: Too many badges can clutter the interface
+4. **Provide context**: Ensure badge meaning is clear from surrounding content
+5. **Icons enhance meaning**: Use icons to reinforce the badge's purpose
+6. **Consistent usage**: Use the same variant for the same type of information throughout your app
+
+## Examples
+
+### Status Badge with Icon
+
+```tsx
+import { Badge } from "@conty/ui"
+import { IconCircleCheck } from "@tabler/icons-react"
+
+<Badge variant="default">
+  <IconCircleCheck />
+  Completed
+</Badge>
+```
+
+### Feature Badge
+
+```tsx
+<div className="flex items-center gap-2">
+  <h3>Premium Feature</h3>
+  <Badge variant="secondary">Pro</Badge>
+</div>
+```
+
+### Interactive Notification Badge
+
+```tsx
+<Badge asChild variant="destructive">
+  <a href="/notifications">
+    3 unread messages
+  </a>
+</Badge>
+```
+
+### Category Tags
+
+```tsx
+<div className="flex flex-wrap gap-2">
+  <Badge variant="outline">React</Badge>
+  <Badge variant="outline">TypeScript</Badge>
+  <Badge variant="outline">Tailwind</Badge>
+</div>
+```
+
+### User Role Badge
+
+```tsx
+<div className="flex items-center gap-2">
+  <span>John Doe</span>
+  <Badge variant="secondary">Admin</Badge>
+</div>
+```

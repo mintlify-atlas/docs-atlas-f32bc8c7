@@ -1,0 +1,218 @@
+---
+title: Contributing Guidelines
+description: Learn how to contribute to the Conty Design System
+---
+
+## Overview
+
+The Conty Design System is built in public with small, frequent contributions. This guide will help you contribute effectively to the project.
+
+## Prerequisites
+
+Before you start, ensure you have the following installed:
+
+- Node.js >= 20
+- npm
+
+## Local Setup
+
+<Steps>
+  <Step title="Clone the repository">
+    Clone the Conty Design System monorepo to your local machine.
+  </Step>
+
+  <Step title="Install dependencies">
+    ```bash
+    npm install
+    ```
+    This will install all dependencies for all packages in the monorepo.
+  </Step>
+
+  <Step title="Start Storybook">
+    ```bash
+    npm run storybook
+    ```
+    Storybook will open at `http://localhost:6006` - this is your development environment.
+  </Step>
+</Steps>
+
+<Note>
+  The `@storybook/addon-mcp` is enabled. Validate the MCP endpoint at `http://localhost:6006/mcp` during local setup.
+</Note>
+
+## Available Scripts
+
+The monorepo provides several useful scripts:
+
+| Script | Description |
+|--------|-------------|
+| `npm run storybook` | Start the Storybook development server |
+| `npm run build-storybook` | Build Storybook for production |
+| `npm run build` | Build all packages in the monorepo |
+| `npm run lint` | Run ESLint across all packages |
+| `npm run typecheck` | Validate TypeScript types across all packages |
+
+## Contribution Workflow
+
+<Steps>
+  <Step title="Create a feature branch">
+    Create a new branch for your changes. Keep the scope small and focused.
+    
+    ```bash
+    git checkout -b feature/your-feature-name
+    ```
+  </Step>
+
+  <Step title="Make your changes">
+    Develop your component or feature in Storybook. Follow the [Definition of Done](/contributing/component-dod) criteria.
+  </Step>
+
+  <Step title="Run quality checks">
+    Before committing, ensure all checks pass:
+    
+    ```bash
+    npm run lint
+    npm run typecheck
+    npm run build
+    ```
+  </Step>
+
+  <Step title="Create a changeset">
+    Document your changes using Changesets:
+    
+    ```bash
+    npm run changeset
+    ```
+    
+    This command will prompt you to:
+    - Select which packages were affected
+    - Choose the version bump type (major, minor, patch)
+    - Write a summary of the changes
+  </Step>
+
+  <Step title="Commit your changes">
+    Commit your changes with a clear, descriptive message:
+    
+    ```bash
+    git add .
+    git commit -m "feat: add new Button component"
+    ```
+  </Step>
+
+  <Step title="Open a Pull Request">
+    Push your branch and open a PR with:
+    - Context: why this change is needed
+    - What changed: summary of modifications
+    - How to test: instructions for reviewers
+  </Step>
+</Steps>
+
+## Changesets Workflow
+
+We use [Changesets](https://github.com/changesets/changesets) to manage versioning and releases.
+
+### Creating a Changeset
+
+When you make a change that affects package consumers:
+
+```bash
+npm run changeset
+```
+
+The CLI will guide you through:
+
+1. **Package selection**: Choose which packages are affected by your change
+2. **Version bump**: Select the type of version bump:
+   - **Patch**: Bug fixes and minor updates
+   - **Minor**: New features (backwards compatible)
+   - **Major**: Breaking changes
+3. **Summary**: Write a brief description of the change
+
+<Info>
+  Changesets are stored in `.changeset/` as markdown files. These files are committed with your changes and used during release.
+</Info>
+
+### Release Process
+
+The release process is managed by maintainers:
+
+<Steps>
+  <Step title="Version packages">
+    ```bash
+    npm run version-packages
+    ```
+    This applies all pending changesets and updates package versions.
+  </Step>
+
+  <Step title="Publish packages">
+    ```bash
+    npm run release
+    ```
+    This publishes updated packages to npm.
+  </Step>
+</Steps>
+
+<Warning>
+  Only maintainers with publish permissions should run the release commands.
+</Warning>
+
+## Monorepo Structure
+
+The Conty Design System is organized as a monorepo with the following packages:
+
+<Accordion title="@conty/design-system">
+  The main entry point package for external consumption. Import this package in your applications.
+</Accordion>
+
+<Accordion title="@conty/tokens">
+  Design tokens and theme definitions. Contains the canonical `tokens.json` file with all visual values.
+</Accordion>
+
+<Accordion title="@conty/ui">
+  Reusable React components. This is where most component development happens.
+</Accordion>
+
+<Accordion title="@conty/storybook">
+  Visual catalog and development environment. The official place to develop and validate UI components.
+</Accordion>
+
+<Accordion title="@conty/eslint-config">
+  Shared ESLint configurations for consistent code style.
+</Accordion>
+
+<Accordion title="@conty/tsconfig">
+  TypeScript presets and configurations.
+</Accordion>
+
+## Principles
+
+When contributing, keep these principles in mind:
+
+### Storybook-First
+
+Every component is born and evolves in Storybook. Stories are not just documentation - they are also test cases covering rendering, interaction, accessibility, and visual regression.
+
+### Token-First
+
+No visual values (colors, spacing, radius, typography, shadows, motion) should be hardcoded in components. Values must exist in `tokens.json` and be referenced in components.
+
+<Warning>
+  Components that hardcode visual values instead of using tokens will not be accepted.
+</Warning>
+
+### Incremental Without Stopping Product
+
+Migration happens in waves, by domain. Use feature flags and fallbacks for sensitive flows.
+
+### Stable Semantic Contract
+
+Token names define intention, not implementation. Use the same semantic names between TypeScript and Dart. Avoid renaming tokens in use - prefer deprecation with a migration window.
+
+## Getting Help
+
+If you need help:
+
+- Review the [Definition of Done](/contributing/component-dod) checklist
+- Check the [Storybook workflow](/contributing/storybook) guide
+- Ask questions in your PR
+- Review existing components in Storybook for examples

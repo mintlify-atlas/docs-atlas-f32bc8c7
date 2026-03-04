@@ -1,0 +1,756 @@
+---
+title: 'Migration Strategy'
+description: 'Incrementally migrate from existing UI libraries to Conty Design System'
+icon: 'arrow-right-arrow-left'
+---
+
+This guide outlines the strategy for migrating from existing UI libraries (shadcn/ui, custom components) to the Conty Design System without breaking production.
+
+## Migration Philosophy
+
+<Warning>
+  **Never attempt a "big bang" migration.** Incremental adoption is the only safe path to production.
+</Warning>
+
+The Conty Design System migration follows these core principles:
+
+1. **Incremental without stopping the product** - migrate in waves by domain
+2. **Feature flags and fallbacks** - maintain escape hatches for critical flows
+3. **Token-first, no hardcode** - all visual values must exist in `tokens.json`
+4. **Storybook as source of truth** - validate components in Storybook before production
+
+## Migration Waves
+
+Components are migrated in five progressive waves, ordered by risk and complexity.
+
+### Wave 0: Inventory and Classification
+
+**Objective**: Understand what exists and prioritize migration.
+
+<Steps>
+  <Step title="Audit existing components">
+    Create an inventory of all UI components in your codebase:
+
+    ```bash
+    # Find all component files
+    find src/components/ui -name "*.tsx" -o -name "*.ts"
+    ```
+
+    Document:
+    - Component name
+    - Usage count (how many files import it)
+    - Complexity (simple/medium/complex)
+    - Business criticality (low/medium/high)
+  </Step>
+
+  <Step title="Classify by risk">
+    Assign a migration priority based on:
+
+    | Factor | Weight | Description |
+    |--------|--------|-------------|
+    | **Usage** | High | More usage = higher priority |
+    | **Complexity** | Medium | Simpler = migrate earlier |
+    | **Criticality** | High | Critical flows need more testing |
+    | **Stability** | Low | Stable components are easier |
+  </Step>
+
+  <Step title="Create migration matrix">
+    Build a prioritization matrix:
+
+    ```markdown
+    | Component | Usage Count | Complexity | Criticality | Wave |
+    |-----------|-------------|------------|-------------|------|
+    | Button    | 247         | Low        | High        | 1    |
+    | Badge     | 89          | Low        | Low         | 1    |
+    | Card      | 156         | Low        | Medium      | 1    |
+    | Input     | 198         | Medium     | High        | 2    |
+    | Select    | 142         | Medium     | High        | 2    |
+    | Table     | 34          | High       | Medium      | 4    |
+    ```
+  </Step>
+</Steps>
+
+### Wave 1: Action and Feedback Components
+
+**Timeline**: Weeks 2-3 (Pilot phase)
+
+**Scope**: Low-risk, high-usage components for user actions and feedback.
+
+**Components**:
+- `Button`
+- `Badge`
+- `Alert`
+- `Toast`
+
+**Why these first?**
+- Simple, stable APIs
+- High visibility allows quick validation
+- Low risk of breaking complex interactions
+
+**Success criteria**:
+- Pilot in production without critical regression
+- Visual parity with legacy components
+- Accessibility checks pass
+- Migration pattern documented
+
+### Wave 2: Form Components
+
+**Timeline**: Weeks 3-5
+
+**Scope**: Input and selection components.
+
+**Components**:
+- `Input`
+- `Textarea`
+- `Select`
+- `Checkbox`
+- `Radio`
+- `Switch`
+
+**Migration considerations**:
+- Form validation must be preserved
+- Error states need thorough testing
+- Accessibility (ARIA labels, focus management) is critical
+
+**Testing checklist**:
+- [ ] Controlled and uncontrolled modes work
+- [ ] Form libraries (React Hook Form, Formik) integrate properly
+- [ ] Validation error display is consistent
+- [ ] Keyboard navigation works as expected
+- [ ] Screen reader announcements are correct
+
+### Wave 3: Navigation and Layout
+
+**Timeline**: Weeks 5-7
+
+**Scope**: Navigation, dialogs, and layout components.
+
+**Components**:
+- `Tabs`
+- `Dialog`
+- `Popover`
+- `Tooltip`
+- `Card` (if not in Wave 1)
+
+**Migration considerations**:
+- Focus trapping in modals must work correctly
+- Keyboard shortcuts should be preserved
+- Portal rendering needs SSR compatibility
+
+**Edge cases to test**:
+- Nested dialogs (if used)
+- Tooltip positioning near viewport edges
+- Tab navigation with dynamic content
+
+### Wave 4: Complex Components
+
+**Timeline**: Weeks 7-10
+
+**Scope**: Data-heavy and specialized components.
+
+**Components**:
+- `Table` / `DataTable`
+- Rich text editors
+- File upload components
+- Payment/checkout components
+- Domain-specific components
+
+**Migration approach**:
+- Migrate one at a time with extensive testing
+- Use feature flags for gradual rollout
+- Monitor error rates and user feedback closely
+
+**Testing requirements**:
+- Performance testing (especially for tables with large datasets)
+- Integration tests for multi-step flows
+- Visual regression tests
+- Cross-browser compatibility
+
+### Wave 5: Full Adoption
+
+**Timeline**: Week 10+
+
+**Objective**: Make Design System the default for all new development.
+
+**Goals**:
+- 80%+ of screens use Design System components
+- Legacy components are deprecated (not removed)
+- New features default to Design System
+- Team is trained on contribution process
+
+## Rollout by Domain
+
+Within each wave, migrate components domain by domain rather than globally.
+
+### Recommended Domain Order
+
+<Steps>
+  <Step title="Authentication and Onboarding">
+    **Why first?**
+    - Self-contained flows with clear boundaries
+    - High visibility for new users
+    - Lower complexity than core app features
+
+    **Components typically used**:
+    - Button, Input, Card, Alert
+
+    **Example flows**:
+    - Login, signup, password reset, email verification, onboarding wizard
+  </Step>
+
+  <Step title="Dashboard and Main Feed">
+    **Why second?**
+    - Most-visited area of the app
+    - Validates design system at scale
+    - Mix of simple and complex components
+
+    **Components typically used**:
+    - Card, Badge, Button, Tabs, Tooltip
+
+    **Example areas**:
+    - Home dashboard, activity feed, quick actions panel
+  </Step>
+
+  <Step title="Settings and Profile">
+    **Why third?**
+    - Form-heavy, validates Wave 2 components
+    - Lower traffic than dashboard (safer)
+    - Users expect changes in settings
+
+    **Components typically used**:
+    - Input, Select, Switch, Button, Card
+
+    **Example pages**:
+    - User profile, account settings, preferences, notification settings
+  </Step>
+
+  <Step title="Billing and Payments">
+    **Why fourth?**
+    - Critical business flow requiring extra caution
+    - Complex forms and validation
+    - High-stakes user experience
+
+    **Components typically used**:
+    - Input, Select, Button, Dialog, Alert
+
+    **Example flows**:
+    - Subscription management, payment methods, invoices, billing history
+
+    <Warning>
+      Use feature flags for payment flows. Maintain ability to rollback instantly.
+    </Warning>
+  </Step>
+
+  <Step title="Advanced Features and Admin">
+    **Why last?**
+    - Lowest traffic, highest complexity
+    - Often uses specialized components
+    - Power users more tolerant of changes
+
+    **Components typically used**:
+    - Table, Dialog, complex forms, custom components
+
+    **Example areas**:
+    - Admin panel, analytics dashboards, advanced settings, data exports
+  </Step>
+</Steps>
+
+## Incremental Adoption Techniques
+
+### 1. Coexistence Pattern
+
+Allow legacy and new components to coexist during migration.
+
+```tsx
+// Legacy import still works
+import { Button as LegacyButton } from "@/components/ui/button"
+
+// Design System import
+import { Button as DSButton } from "@conty/design-system"
+
+export function MixedComponent() {
+  return (
+    <div>
+      {/* Old button in critical flow */}
+      <LegacyButton variant="default">Legacy Action</LegacyButton>
+
+      {/* New button in non-critical area */}
+      <DSButton variant="default">New Action</DSButton>
+    </div>
+  )
+}
+```
+
+### 2. Feature Flag Pattern
+
+Gate design system adoption behind runtime flags.
+
+```tsx
+import { Button as DSButton } from "@conty/design-system"
+import { Button as LegacyButton } from "@/components/ui/button"
+import { useFeatureFlag } from "@/lib/feature-flags"
+
+export function AdaptiveButton(props: ButtonProps) {
+  const useNewDesignSystem = useFeatureFlag('design-system-enabled')
+  const Button = useNewDesignSystem ? DSButton : LegacyButton
+
+  return <Button {...props} />
+}
+```
+
+**Feature flag levels**:
+- **Development**: Enabled for all developers
+- **Staging**: Enabled globally
+- **Production**: Gradual rollout (10% → 50% → 100%)
+
+### 3. Module Boundary Pattern
+
+Migrate entire modules (pages/features) at once rather than individual components.
+
+```tsx
+// app/(auth)/login/page.tsx - Fully migrated
+import { Button, Input, Card } from "@conty/design-system"
+
+export default function LoginPage() {
+  return (
+    <Card>
+      <Input type="email" />
+      <Button>Login</Button>
+    </Card>
+  )
+}
+
+// app/dashboard/page.tsx - Still legacy
+import { Button, Card } from "@/components/ui"
+
+export default function DashboardPage() {
+  return (
+    <Card>
+      <Button>Action</Button>
+    </Card>
+  )
+}
+```
+
+**Benefits**:
+- Clear migration boundaries
+- Easier to test and validate
+- Simpler rollback process
+
+### 4. Gradual Replacement Pattern
+
+Replace legacy components file by file, tracking progress.
+
+```bash
+# Find all files using legacy Button
+rg "from ['\"]@/components/ui/button['\"]"
+
+# Results:
+# src/app/auth/login.tsx
+# src/app/dashboard/header.tsx
+# src/components/checkout/payment-form.tsx
+
+# Migrate one file at a time:
+# ✅ src/app/auth/login.tsx
+# ✅ src/app/dashboard/header.tsx
+# ⏳ src/components/checkout/payment-form.tsx (pending)
+```
+
+Track progress with a migration dashboard:
+
+```markdown
+## Migration Progress
+
+**Button**: 87/124 files migrated (70%)
+**Badge**: 45/89 files migrated (51%)
+**Card**: 102/156 files migrated (65%)
+```
+
+## Migration Testing Strategy
+
+### Pre-Migration Validation
+
+<Steps>
+  <Step title="Visual regression baseline">
+    Capture screenshots of legacy components before migration:
+
+    ```bash
+    npm run test:visual -- --update-snapshots
+    ```
+  </Step>
+
+  <Step title="Component compatibility check">
+    Verify design system component API matches legacy:
+
+    ```tsx
+    // Test that props are compatible
+    import { Button as Legacy } from "@/components/ui/button"
+    import { Button as DS } from "@conty/design-system"
+
+    const legacyProps = { variant: "default", size: "lg" }
+    const dsProps = { variant: "default", size: "lg" }
+
+    // Both should render without errors
+    ```
+  </Step>
+
+  <Step title="Storybook validation">
+    Review all component states in Storybook:
+
+    - Default state
+    - All variants
+    - All sizes
+    - Disabled state
+    - Loading state (if applicable)
+    - Error state (if applicable)
+    - Dark mode
+  </Step>
+</Steps>
+
+### During Migration
+
+<Steps>
+  <Step title="Incremental rollout">
+    Deploy to production in stages:
+
+    1. **5%** of users for 24 hours
+    2. **25%** of users for 48 hours
+    3. **50%** of users for 72 hours
+    4. **100%** of users
+  </Step>
+
+  <Step title="Monitor key metrics">
+    Track:
+    - Error rates (JavaScript errors, React errors)
+    - User engagement (click rates, form completions)
+    - Performance (Core Web Vitals)
+    - Accessibility violations
+    - User feedback and support tickets
+  </Step>
+
+  <Step title="Maintain rollback capability">
+    Keep feature flags active for at least 2 weeks post-migration:
+
+    ```tsx
+    // Easy to switch back if issues arise
+    const useDesignSystem = useFeatureFlag('design-system-auth')
+    ```
+  </Step>
+</Steps>
+
+### Post-Migration
+
+<Steps>
+  <Step title="Visual regression validation">
+    Compare new screenshots with baseline:
+
+    ```bash
+    npm run test:visual -- --compare
+    ```
+
+    Review and approve differences.
+  </Step>
+
+  <Step title="Accessibility audit">
+    Run automated accessibility tests:
+
+    ```bash
+    npm run test:a11y
+    ```
+
+    Ensure no new violations were introduced.
+  </Step>
+
+  <Step title="Performance comparison">
+    Compare bundle size and runtime performance:
+
+    ```bash
+    npm run build -- --analyze
+    ```
+
+    Check for regressions in:
+    - JavaScript bundle size
+    - CSS bundle size
+    - Time to Interactive (TTI)
+    - First Contentful Paint (FCP)
+  </Step>
+</Steps>
+
+## Handling Edge Cases
+
+<AccordionGroup>
+  <Accordion title="Custom variants not in design system">
+    **Problem**: Your legacy component has a custom variant (e.g., `warning` badge) not in the design system.
+
+    **Solution**:
+    1. **Option A**: Extend the design system component locally:
+       ```tsx
+       import { Badge, badgeVariants } from "@conty/design-system"
+       import { cva } from "class-variance-authority"
+
+       const extendedBadgeVariants = cva(badgeVariants(), {
+         variants: {
+           variant: {
+             warning: "bg-amber-500 text-white",
+           },
+         },
+       })
+       ```
+    2. **Option B**: Map to the closest design system variant:
+       ```tsx
+       // Map warning → destructive
+       <Badge variant="destructive">Warning</Badge>
+       ```
+    3. **Option C**: Propose adding the variant to the design system (preferred for reusable variants).
+  </Accordion>
+
+  <Accordion title="Breaking API changes">
+    **Problem**: Design system component API differs from legacy.
+
+    **Solution**: Create a compatibility wrapper:
+    ```tsx
+    // components/compat/button.tsx
+    import { Button as DSButton } from "@conty/design-system"
+
+    export function Button({ color, ...props }) {
+      // Map legacy "color" prop to "variant"
+      const variant = color === "blue" ? "default" : color
+      return <DSButton variant={variant} {...props} />
+    }
+    ```
+
+    Use the wrapper during migration, then refactor call sites later.
+  </Accordion>
+
+  <Accordion title="Complex composed components">
+    **Problem**: Your component composes multiple primitives in a custom way.
+
+    **Solution**: Rebuild using design system primitives:
+    ```tsx
+    // Before: Custom composed card
+    import { Card } from "@/components/ui/card"
+    import { Badge } from "@/components/ui/badge"
+
+    // After: Rebuilt with design system
+    import { Card, CardHeader, CardTitle, Badge } from "@conty/design-system"
+
+    export function StatusCard({ status, title, children }) {
+      return (
+        <Card>
+          <CardHeader>
+            <CardTitle>{title}</CardTitle>
+            <Badge>{status}</Badge>
+          </CardHeader>
+          <CardContent>{children}</CardContent>
+        </Card>
+      )
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Theme-specific styling">
+    **Problem**: Legacy component has hardcoded theme-specific styles.
+
+    **Solution**: Use design tokens instead:
+    ```tsx
+    // Before: Hardcoded colors
+    <div className="bg-white dark:bg-gray-900">
+
+    // After: Use design tokens
+    <div className="bg-background">
+    ```
+
+    Ensure the design token matches the intended semantic meaning.
+  </Accordion>
+</AccordionGroup>
+
+## Progress Tracking
+
+Create a migration dashboard to track progress across waves and domains.
+
+### Example Migration Dashboard
+
+```markdown
+# Design System Migration Progress
+
+Last updated: 2026-03-04
+
+## Overall Progress
+
+**Total Components**: 15
+**Migrated**: 8 (53%)
+**In Progress**: 3 (20%)
+**Not Started**: 4 (27%)
+
+## By Wave
+
+### Wave 1: Action/Feedback (100% complete ✅)
+- [x] Button (247/247 usages)
+- [x] Badge (89/89 usages)
+- [x] Alert (34/34 usages)
+
+### Wave 2: Forms (60% complete 🚧)
+- [x] Input (198/198 usages)
+- [x] Checkbox (67/67 usages)
+- [ ] Select (0/142 usages)
+- [ ] Radio (0/89 usages)
+
+### Wave 3: Navigation/Layout (0% complete)
+- [ ] Tabs
+- [ ] Dialog
+- [ ] Tooltip
+
+### Wave 4: Complex (0% complete)
+- [ ] Table
+- [ ] DataTable
+
+## By Domain
+
+- [x] Auth/Onboarding (100%)
+- [x] Dashboard (100%)
+- [ ] Settings (40%)
+- [ ] Billing (0%)
+- [ ] Admin (0%)
+```
+
+### Automated Tracking
+
+Use scripts to track import usage:
+
+```bash
+#!/bin/bash
+# scripts/track-migration.sh
+
+echo "## Button Migration Progress"
+LEGACY=$(rg "from ['\"]@/components/ui/button['\"]"; --count-matches | wc -l)
+DS=$(rg "from ['\"]@conty/design-system['\"]"; --count-matches | rg "Button" | wc -l)
+TOTAL=$((LEGACY + DS))
+PERCENT=$((DS * 100 / TOTAL))
+
+echo "Progress: $DS/$TOTAL files ($PERCENT%)"
+```
+
+## Success Criteria
+
+A migration wave is considered complete when:
+
+<Steps>
+  <Step title="Functional parity">
+    - All legacy component features are supported
+    - No regressions in user-facing functionality
+    - Forms validate and submit correctly
+  </Step>
+
+  <Step title="Visual consistency">
+    - Visual regression tests pass
+    - Design team approves visual output
+    - Dark mode works correctly
+  </Step>
+
+  <Step title="Accessibility maintained">
+    - No new WCAG violations
+    - Screen reader testing passes
+    - Keyboard navigation works
+  </Step>
+
+  <Step title="Performance acceptable">
+    - No significant increase in bundle size
+    - Core Web Vitals remain stable
+    - No runtime performance regressions
+  </Step>
+
+  <Step title="Adoption metrics hit">
+    - Target percentage of files migrated
+    - Design system components used in target domains
+    - Feature flags cleaned up (for stable migrations)
+  </Step>
+</Steps>
+
+## Rollback Plan
+
+Maintain the ability to rollback at each stage.
+
+### Level 1: Feature Flag Rollback
+
+```tsx
+// Instant rollback via feature flag
+const useDesignSystem = useFeatureFlag('design-system-checkout')
+
+// Set flag to false in admin panel or config
+```
+
+**Rollback time**: Seconds (flag toggle)
+
+### Level 2: Code Rollback
+
+```bash
+# Revert specific migration commit
+git revert <commit-hash>
+git push origin main
+```
+
+**Rollback time**: Minutes (git revert + deploy)
+
+### Level 3: Domain Rollback
+
+```tsx
+// Restore legacy imports for entire domain
+- import { Button } from "@conty/design-system"
++ import { Button } from "@/components/ui/button"
+```
+
+**Rollback time**: Hours (code change + testing + deploy)
+
+## Risk Mitigation
+
+<Warning>
+  **Critical flows require extra protection.** Never migrate payment, authentication, or data-loss-prone flows without extensive testing and feature flags.
+</Warning>
+
+### High-Risk Areas
+
+| Area | Risk Level | Mitigation |
+|------|------------|------------|
+| Payment/Checkout | 🔴 Critical | Feature flags + A/B test + extensive testing |
+| Authentication | 🔴 Critical | Feature flags + canary deployment |
+| Data editing | 🟡 High | Feature flags + user testing |
+| Admin actions | 🟡 High | Testing + gradual rollout |
+| Dashboard views | 🟢 Medium | Visual tests + monitoring |
+| Settings pages | 🟢 Medium | Visual tests |
+| Marketing pages | 🟢 Low | Visual review |
+
+### Migration Checklist per Component
+
+Before marking a component migration as complete:
+
+- [ ] Storybook stories exist for all states
+- [ ] Visual regression tests pass
+- [ ] Accessibility audit shows no new violations
+- [ ] TypeScript types are correct
+- [ ] Dark mode works
+- [ ] SSR/hydration works (for Next.js)
+- [ ] Component tests pass
+- [ ] Performance is acceptable
+- [ ] Design team has approved
+- [ ] Code review completed
+- [ ] Deployed to staging and tested
+- [ ] Deployed to production with feature flag
+- [ ] Monitored for 48 hours minimum
+- [ ] Feature flag removed (after stability confirmed)
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="conty-web Integration" icon="code" href="/integration/conty-web">
+    See specific migration steps for conty-web
+  </Card>
+  <Card title="Component Reference" icon="book" href="/components/overview">
+    Explore design system component APIs
+  </Card>
+  <Card title="Design Tokens" icon="palette" href="/tokens/overview">
+    Understand the token system
+  </Card>
+  <Card title="Contributing" icon="code-pull-request" href="/contributing/guidelines">
+    Learn how to contribute new components
+  </Card>
+</CardGroup>
